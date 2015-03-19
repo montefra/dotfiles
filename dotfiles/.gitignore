@@ -1,3 +1,5 @@
 .*.un~
 .*.sw[a-p]
 doc/tags
+.eggs
+__pycache__
