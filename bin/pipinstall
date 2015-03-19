@@ -1,0 +1,33 @@
+#!/bin/bash
+# remove the given package with pip2 and pip3 
+
+log2=$HOME/.pip/pip2_install.log
+log3=$HOME/.pip/pip3_install.log
+
+# check if the exit code 0 or not
+# \param $1: error code
+# \param $2: command line arguments
+function checkexit(){
+  if [ $1 -eq 0 ]
+  then
+    echo -e "Installation of "$2": \e[1;32msuccess\e[0m"
+  else
+    echo -e "Installation of "$2": \e[1;31mfail. Check the log files'\e[0m"
+  fi
+}
+
+echo Clear old log files
+cat /dev/null > $log2
+cat /dev/null > $log3
+
+echo Installing $@ with pip2
+pip2 install --user --allow-all-external $@ >> $log2
+checkexit #? $@
+
+echo ==================== 
+echo Installing $@ with pip3
+
+pip3 install --user --allow-all-external $@ >> $log3
+checkexit #? $@
+
+exit

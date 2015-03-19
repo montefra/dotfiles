@@ -1,0 +1,5 @@
+#!/bin/bash
+# use vimdiff to see svn diffs
+
+# vimdiff "$7" "$6"
+colordiff -u -L "${3}" -L "${5}" "${6}" "${7}" | less -FRSX

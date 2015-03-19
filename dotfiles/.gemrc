@@ -1,0 +1,3 @@
+install: --format-executable --user-install
+update: --format-executable --user-install
+

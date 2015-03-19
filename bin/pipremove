@@ -1,0 +1,29 @@
+#!/bin/bash
+# uninstall the given packages with pip2 and pip3 
+
+log2=$HOME/.pip/pip2_uninstall.log
+log3=$HOME/.pip/pip3_uninstall.log
+
+# check if the exit code 0 or not
+# \param $1: error code
+# \param $2: command line arguments
+function checkexit(){
+  if [ $1 -eq 0 ]
+  then
+    echo -e "Removal of "$2": \e[1;32msuccess\e[0m"
+  else
+    echo -e "Removal of "$2": \e[1;31mfail. Check the log files'\e[0m"
+  fi
+}
+
+echo Uninstalling $@ with pip2
+pip2 uninstall -y $@ >> $log2
+checkexit #? $@
+
+echo ==================== 
+echo Uninstalling $@ with pip3
+
+pip3 uninstall -y $@ >> $log3
+checkexit #? $@
+
+exit

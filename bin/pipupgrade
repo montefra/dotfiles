@@ -1,0 +1,81 @@
+#!/bin/bash
+# upgrade packages installed with pip2 and pip3
+
+log2=$HOME/.pip/pip2_upgrade.log
+log3=$HOME/.pip/pip3_upgrade.log
+
+locallibdir=$HOME/.local/lib
+
+echo Clear old log files
+cat /dev/null > $log2
+cat /dev/null > $log3
+
+# list the packages to update. Filters out any line starting with Some or Could
+# \param $1: name of the pip code to use
+# \return: list of packages to be upgraded
+function get_toupdate(){
+  to_up=`$1 list -l -o --allow-all-external 2>/dev/null | awk '{print $1}'`
+  to_up=${to_up//Could}  # remove Could
+  to_up=${to_up//Some}  # remove Some
+
+  echo $to_up
+}
+
+# check if the package is installed in .local/lib
+# \param $1: name of the pip code to use
+# \param $2: name of the package
+# \return: true, if the package is local, false otherwise
+function is_local(){
+  loc=`$1 show $2 | awk '$1~"Location:" {print $2}'`
+  if [[ "$loc" = *local/lib* ]]
+  then 
+    echo true
+  else 
+    echo false
+  fi
+}
+
+# check if the exit code 0 or not
+# \param $1: error code
+# \param $2: name of the package
+function checkexit(){
+  if [ $1 -eq 0 ]
+  then
+    echo -e "Upgrade of $2: \e[1;32msuccess\e[0m"
+  else
+    echo -e "Upgrade of $2: \e[1;31mfail. Check the log files'\e[0m"
+  fi
+}
+
+# upgrade the package
+# \param $1: mane of pip code to use
+# \param $2: package to update
+# \param $3: log file name
+function update(){
+  is_l=`is_local $1 $2`
+  if [ $is_l = true ]
+  then
+    echo $2
+    $1 install -U --user --allow-all-external $2 >> $3
+    checkexit $? $2
+  else
+    echo To upgrade $2 first re-install it by hand using --user
+  fi
+}
+
+echo Upgrading with pip2 the following packages
+to_up2=`get_toupdate pip2`
+echo $to_up2
+for tu2 in $to_up2
+do
+  update pip2 $tu2 $log2
+done
+
+echo ==================== 
+echo Upgrading with pip3 the following packages
+to_up3=`get_toupdate pip3`
+echo $to_up3
+for tu3 in $to_up3
+do
+  update pip3 $tu3 $log3
+done

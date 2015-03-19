@@ -1,0 +1,185 @@
+##### My (demuredemeanor) bashrc sub source prompt script
+# Uses tabstop=4; shiftwidth=4 tabs; foldmarker={{{,}}};
+# http://github.com/demure/dotfiles
+# https://gitorious.org/demure/dotfiles/
+# vim:set syntax=sh:
+#
+# Modified by Francesco Montesano (https://github.com/montefra/dotfiles)
+
+### This Changes The PS1 ### {{{
+export PROMPT_COMMAND=__prompt_command  # Func to gen PS1 after CMDs
+
+function __prompt_command() {
+    # This needs to be first
+    local EXIT="$?"
+    PS1=""
+
+    ### Colors to Vars ### {{{
+    ## Inspired by http://wiki.archlinux.org/index.php/Color_Bash_Prompt#List_of_colors_for_prompt_and_Bash
+    ## Terminal Control Escape Sequences: http://www.termsys.demon.co.uk/vtansi.htm
+    ## Consider using some of: https://gist.github.com/bcap/5682077#file-terminal-control-sh
+    ## Can unset with `unset -v {,B,U,I,BI,On_,On_I}{Bla,Red,Gre,Yel,Blu,Pur,Cya,Whi} RCol`
+    local RCol='\[\e[0m\]'  # Text Reset
+
+    # Regular           Bold                Underline           High Intensity              BoldHigh Intensity      Background      High Intensity Backgrounds
+    local Bla='\[\e[0;30m\]';   local BBla='\[\e[1;30m\]';  local UBla='\[\e[4;30m\]';  local IBla='\[\e[0;90m\]';  local BIBla='\[\e[1;90m\]'; local On_Bla='\e[40m';  local On_IBla='\[\e[0;100m\]';
+    local Red='\[\e[0;31m\]';   local BRed='\[\e[1;31m\]';  local URed='\[\e[4;31m\]';  local IRed='\[\e[0;91m\]';  local BIRed='\[\e[1;91m\]'; local On_Red='\e[41m';  local On_IRed='\[\e[0;101m\]';
+    local Gre='\[\e[0;32m\]';   local BGre='\[\e[1;32m\]';  local UGre='\[\e[4;32m\]';  local IGre='\[\e[0;92m\]';  local BIGre='\[\e[1;92m\]'; local On_Gre='\e[42m';  local On_IGre='\[\e[0;102m\]';
+    local Yel='\[\e[0;33m\]';   local BYel='\[\e[1;33m\]';  local UYel='\[\e[4;33m\]';  local IYel='\[\e[0;93m\]';  local BIYel='\[\e[1;93m\]'; local On_Yel='\e[43m';  local On_IYel='\[\e[0;103m\]';
+    local Blu='\[\e[0;34m\]';   local BBlu='\[\e[1;34m\]';  local UBlu='\[\e[4;34m\]';  local IBlu='\[\e[0;94m\]';  local BIBlu='\[\e[1;94m\]'; local On_Blu='\e[44m';  local On_IBlu='\[\e[0;104m\]';
+    local Pur='\[\e[0;35m\]';   local BPur='\[\e[1;35m\]';  local UPur='\[\e[4;35m\]';  local IPur='\[\e[0;95m\]';  local BIPur='\[\e[1;95m\]'; local On_Pur='\e[45m';  local On_IPur='\[\e[0;105m\]';
+    local Cya='\[\e[0;36m\]';   local BCya='\[\e[1;36m\]';  local UCya='\[\e[4;36m\]';  local ICya='\[\e[0;96m\]';  local BICya='\[\e[1;96m\]'; local On_Cya='\e[46m';  local On_ICya='\[\e[0;106m\]';
+    local Whi='\[\e[0;37m\]';   local BWhi='\[\e[1;37m\]';  local UWhi='\[\e[4;37m\]';  local IWhi='\[\e[0;97m\]';  local BIWhi='\[\e[1;97m\]'; local On_Whi='\e[47m';  local On_IWhi='\[\e[0;107m\]';
+    ### End Color Vars ### }}}
+
+    if [ $UID -eq "0" ];then   #{{{ Set prompt for root
+        PS1+="${Red} \u@\h \w ->${RCol} "   #}}}
+    else    # set prompt for anyone else {{{
+        # if inside a python virtual environment {{{
+        # Normally this happen by default, but this customisation make things a
+        # bit more complicated
+        if [ -n "$VIRTUAL_ENV" ]
+        then
+            PS1+="${BIWhi}(`basename ${VIRTUAL_ENV}`)${RCol}"
+        fi #}}}
+
+        local PSCol=""                      # Declare so null var fine
+
+        ### error code {{{
+        if [ $EXIT != 0 ]; then
+            ## can add `kill -l $?` to test to filter backgrounded
+            PS1+="${IRed}(${EXIT})${RCol} "     # Add exit code, if non 0
+        fi   #}}}
+
+        ## write user and host always
+        PS1+="${Gre}\u@\h${RCol}:"
+
+        ### current working directory {{{
+        # Cut long path
+        # MYPS='$(echo -n "${PWD/#$HOME/~}")'  
+        # | awk -F "/" '"'"'{if (length($0) > 14) { if (NF>4) print $1 "/"
+        # $2 "/.../" $(NF-1) "/" $NF; else if (NF>3) print $1 "/" $2
+        # "/.../" $NF; else print $1 "/.../" $NF; } else print $0;}'"'"')'
+
+        #PS1+="${BGre}${MYPS}${RCol}"    # Shortened current working dir
+        PS1+="${BGre}\w${RCol}"          # full path
+        #}}}
+
+        ### Check Jobs ### {{{
+        ## Backgrounded running jobs
+        local BKGJBS=$(jobs -r | wc -l | tr -d ' ')
+        if [ ${BKGJBS} -gt 2 ]; then
+            PS1+=" ${Red}[bg:${BKGJBS}]${RCol}"
+        elif [ ${BKGJBS} -gt 0 ]; then
+            PS1+=" ${Yel}[bg:${BKGJBS}]${RCol}"
+        fi
+
+        ## Stopped Jobs
+        local STPJBS=$(jobs -s | wc -l | tr -d ' ')
+        if [ ${STPJBS} -gt 2 ]; then
+            PS1+=" ${Red}[stp:${STPJBS}]${RCol}"
+        elif [ ${STPJBS} -gt 0 ]; then
+            PS1+=" ${Yel}[stp:${STPJBS}]${RCol}"
+        fi
+        ### End Jobs ### }}}
+
+        ### Add Git Status ### {{{
+        ## Inspired by http://www.terminally-incoherent.com/blog/2013/01/14/whats-in-your-bash-prompt/
+        local GStat="$(git status --porcelain -b 2>/dev/null | tr '\n' ':')"
+
+        if [ "$GStat" ]; then
+            PS1+=' +git'
+
+            ### Test For Changes ### {{{
+            ## Change this to test for 'ahead' or 'behind'!
+            local GChanges="$(echo ${GStat} | tr ':' '\n' | /bin/grep -v "^$" | /bin/grep -v "^\#\#" | wc -l | tr -d ' ')"
+            if [ "$GChanges" == "0" ]; then
+                local GitCol=$Gre
+              else
+                local GitCol=$Red
+            fi
+            ### End Test Changes ### }}}
+
+            ### Find Branch ### {{{
+            local GBra="$(echo ${GStat} | tr ':' '\n' | /bin/grep "^##" | cut -c4-)"
+            local GBra=${GBra/..*/}
+            PS1+="${GitCol}[$GBra]${RCol}"  # Add result to prompt
+            #}}}
+
+            ### Find Commit Status ### {{{
+            local GAhe="$(echo ${GStat} | tr ':' '\n' | /bin/grep "^##" | /bin/grep -o "ahead [0-9]\{1,\}" | /bin/grep -o "[0-9]\{1,\}")"
+            if [ "$GAhe" ]; then
+                PS1+="${Gre}↑${GAhe}"   # Ahead
+            fi
+
+            local GBeh="$(echo ${GStat} | tr ':' '\n' | /bin/grep "^##" | /bin/grep -o "behind [0-9]\{1,\}" | /bin/grep -o "[0-9]\{1,\}")"
+            if [ "$GBeh" ]; then
+                PS1+="${Red}↓${GBeh}"   # Behind
+            fi
+
+            local GMod="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^[ MARC]M")"
+            if [ "$GMod" -gt "0" ]; then
+                PS1+="${Pur}≠${GMod}"   # Modified
+            fi
+
+            local GNew="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^A")"
+            if [ "$GNew" -gt "0" ]; then
+                PS1+="${Cya}N${GNew}"   # Added
+            fi
+
+            local GDel="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^ D")"
+            if [ "$GDel" -gt "0" ]; then
+                PS1+="${Yel}X${GDel}"   # Deleted
+            fi
+
+            local GUnt="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^\?")"
+            if [ "$GUnt" -gt "0" ]; then
+                PS1+="${Whi}?${GUnt}"   # Untracked
+            fi
+            ### End Commit Status ### }}}
+        fi
+        ### End Git Status ### }}}
+
+        ### add SVN status ### {{{
+        revision=`svn info 2>/dev/null | awk '$1~"Revision" {print $2}'`
+        if [ -n "$revision" ]
+        then
+            PS1+=' +svn'
+            # get the status
+            SStat=`svn status | awk '{print $1}'`
+            # if the status is empty write the revision in green, otherwise red {{{
+            if [ -n "$SStat" ]
+            then
+                PS1+="${Red}[$revision]${RCol}"  # Add result to prompt
+            else
+                PS1+="${Gre}[$revision]${RCol}"  # Add result to prompt
+            fi
+            # }}}
+            # Check for modified, new, untracked and removed files {{{
+            local SMod="$(echo "${SStat}" | /bin/grep -c "M")"
+            if [ "$SMod" -gt "0" ]; then
+                PS1+="${Pur}≠${SMod}"   # Modified
+            fi
+
+            local SNew="$(echo "${SStat}" | /bin/grep -c "A")"
+            if [ "$SNew" -gt "0" ]; then
+                PS1+="${Cya}N${SNew}"   # Added
+            fi
+
+            local SDel="$(echo "${SStat}" | /bin/grep -c "D")"
+            if [ "$SDel" -gt "0" ]; then
+                PS1+="${Yel}X${SDel}"   # Deleted
+            fi
+
+            local SUnt="$(echo "${SStat}" | /bin/grep -c "?")"
+            if [ "$SUnt" -gt "0" ]; then
+                PS1+="${Whi}?${SUnt}"   # Untracked
+            fi
+            # }}}
+        fi
+        ### end SVN status ### }}}
+
+        PS1+=" ${BIBlu}-> ${RCol}"          ## End of PS1
+    fi  # }}}
+}
+### End PS1 ### }}}
