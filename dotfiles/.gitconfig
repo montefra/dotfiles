@@ -2,7 +2,7 @@
 	name = Francesco Montesano
 	email = franz.bergesund@gmail.com
 [core]
-	excludesfile = /home/montefra/.gitignore
+	excludesfile = ~/.gitignore
 	editor = vim
 [diff]
 	tool = vimdiff

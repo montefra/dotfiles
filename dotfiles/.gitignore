@@ -1,5 +1,8 @@
 .*.un~
 .*.sw[a-p]
 doc/tags
+*.o
+*.hi
 .eggs
 __pycache__
+*.pyc
