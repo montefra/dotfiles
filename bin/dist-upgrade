@@ -1,0 +1,20 @@
+#!/bin/bash
+#do the update, dist-upgrade and clean in one go
+
+exename=`command -v apt-get || command -v zypper`
+
+# update/refresh the repositories
+sudo $exename -qq update || sudo $exename refresh
+
+# distribution upgrade
+sudo $exename dist-upgrade
+
+hasfinished=$?   #get the exit from status dist-upgrade
+if [ $hasfinished -eq 0 ]
+  then
+  sudo $exename clean   #clear the downloaded file
+else
+  echo "Error while running $exename dist-upgrade"
+fi
+
+exit $hasfinished 
