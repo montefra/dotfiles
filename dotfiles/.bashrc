@@ -104,19 +104,6 @@ ulimit -c unlimited
 
 stty stop undef # to unmap ctrl-s
 
-# set PATH so it includes user's private bin if it exists
-if [ -d ~/bin ] ; then
-    export PATH=~/bin:"${PATH}"
-fi
-if [ -d ~/.local/bin ]
-then
-  export PATH=~/.local/bin:"${PATH}"
-fi
-if [ -d ~/.gem/ruby/2.1.0/bin ]
-then
-  export PATH=~/.gem/ruby/2.1.0/bin:"${PATH}"
-fi
-
 export EDITOR=vim
 export VISUAL=vim
 # default editor for fc http://www.computerhope.com/unix/uhistory.htm
