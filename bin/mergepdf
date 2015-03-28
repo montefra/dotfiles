@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#merge pdf files using gs 
+
+function help_mergepdf {
+  echo "  Merge pdf using Gostscript"
+  echo "  Usage"
+  echo "    `basename $1` output_file input_file [input_file ...]"
+  exit
+}
+
+if [ $# -lt 2 -o "$1" == '-h' -o "$1" == '--help' ]
+then
+  help_mergepdf $0
+fi
+
+if [ -e $1 ]
+  then
+  echo "The file '"$1"' already exists"
+  exit 1
+else 
+  gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=$1 ${@:2}
+fi
+
+exit
