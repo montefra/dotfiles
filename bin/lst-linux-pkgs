@@ -1,0 +1,43 @@
+#!/bin/bash
+# borrowed from Achim Bohnet
+
+set -e
+action="$1"
+dbg=echo
+#dbg=:
+
+if sort --version-sort </dev/null 2>/dev/null ; then
+	sort_opt=--version-sort
+else
+	sort_opt=""	# e.g. Hardy systems don't know version-sort: There xx-9 > xx-11 is a problem
+fi
+
+running_version=$(uname -r)
+running_version=${running_version%-*}   # strip of -generic or -server
+
+latest_installed=$(cd /boot; ls vmlinuz-[23].[0-9]* | sort $sort_opt | tail -1)
+latest_installed=${latest_installed#vmlinuz-}
+latest_installed=${latest_installed%-*}
+
+obsolete=$(dpkg -l | grep ^i | egrep -e "-(2\\.6|3\\.[0-9]+)\\.[0-9]+[- ]" | awk "{print \$2}" | grep -v '^lib' | fgrep -ve -$latest_installed | fgrep -ve -$running_version | sort $sort_opt )
+
+case "$action" in
+-h|--help)
+	echo "Usage:  ${0##*/} [-h|--help] | [--remove-them | --yes-remove-them]"
+	;;
+--remove-them)
+	sudo apt-get --purge remove $obsolete
+	;;
+--yes-remove-them)
+	sudo apt-get --purge remove --yes $obsolete
+	;;
+*)
+	echo running_version = $running_version
+	echo latest_installed= $latest_installed
+
+	echo obsolete=
+	for p in $obsolete; do
+		echo "         $p"
+	done
+	;;
+esac
