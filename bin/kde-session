@@ -1,0 +1,33 @@
+#!/bin/bash
+
+##----------------------------------------------------------------------------------------------------
+## See:
+##	http://majewsky.wordpress.com/2009/07/11/shutdown-your-machine-automatically-or-from-remote/
+## and
+##	http://api.kde.org/4.x-api/kde-workspace-apidocs/libs/kworkspace/html/namespaceKWorkSpace.html
+##----------------------------------------------------------------------------------------------------
+
+case "$1" in 
+lock)
+	set -x
+	exec qdbus org.freedesktop.ScreenSaver /ScreenSaver org.freedesktop.ScreenSaver.Lock
+	;;
+logout)
+	set -x
+	exec  qdbus org.kde.ksmserver /KSMServer logout 0 0 0
+	;;
+
+reboot)
+	set -x
+	exec  qdbus org.kde.ksmserver /KSMServer logout 0 0 1
+	;;
+
+shutdown)
+	set -x
+	exec  qdbus org.kde.ksmserver /KSMServer logout 0 2 2
+	;;
+*)
+	echo "Usage: ${0##*/}  lock|logout|reboot|shutdown" 
+	exit 1
+	;;
+esac
