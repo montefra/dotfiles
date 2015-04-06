@@ -4,7 +4,7 @@
 exename=`command -v apt-get || command -v zypper`
 
 # update/refresh the repositories
-sudo $exename -qq update || sudo $exename refresh
+sudo $exename refresh || sudo $exename update
 
 # distribution upgrade
 sudo $exename dist-upgrade
