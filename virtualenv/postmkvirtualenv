@@ -1,26 +1,16 @@
 #!/bin/bash
 # virtualenvwrapper
 # This hook is sourced after a new virtualenv is activated.
-
-# link pyqt 4 and 5 and sip into the virtualenv 
+# link pyqt 4, 5 and sip into the virtualenv
 
 # get the python version
-echo "Linking pyQt4, pyQt5 and SIP into the virtual environment"
-python_version=`python -c 'import sys; print("{}.{}".format(*sys.version_info))'`
-echo $python_version
+pyv=`python -c 'import sys; print("{}.{}".format(*sys.version_info))'`
 
-# get the source and destination directory
-if [ ${python_version} = '2.7' ]
-then
-  dsource=/usr/lib/python2.7/dist-packages
-elif [ ${python_version} = '3.4' ]
-then
-  dsource=/usr/lib/python3/dist-packages
-fi
-ddest=${VIRTUAL_ENV}/lib/python${python_version}/site-packages
+virtual_env=${VIRTUAL_ENV}
 
-# do the linking
-ln -s ${dsource}/PyQt[45] ${ddest}
-ln -s ${dsource}/sip*py ${ddest}
-ln -s ${dsource}/sip*so ${ddest}
-echo "done"
+# get out of the virtual environment
+deactivate
+
+python$pyv $WORKON_HOME/postmkvirtualenv.py ${virtual_env}
+
+workon `basename $virtual_env`
