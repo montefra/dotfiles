@@ -29,11 +29,8 @@ function pip_install(){
   shift
   shift
   echo Installing \""$@"\" with $pipv
-  for p in "$@"
-  do
-    pip2 install --user --allow-all-external $p >> $logf
-    checkexit $? $p
-  done
+  pip2 install --user --allow-all-external "$@" >> $logf
+  checkexit $? $p
 }
 
 echo Clear old log files
