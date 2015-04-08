@@ -94,8 +94,8 @@ function update(){
 # if we are in a virtual env, save the name and deactivate
 if [ $VIRTUAL_ENV ]
 then
-  venvname=`basename $VIRTUAL_ENV`
-  deactivate
+  echo "The script does not work properly when launched from a virtual environment"
+  exit 5
 fi
 
 # log directory
@@ -110,9 +110,9 @@ echo Clear old log files
 cat /dev/null > $log2
 cat /dev/null > $log3
 
-# update pip2 $log2
+update pip2 $log2
 echo ==================== 
-# update pip3 $log3
+update pip3 $log3
 
 # update the virtual environments
 # enable workon
@@ -125,6 +125,7 @@ then
 else
   for v in $venvs
   do
+    echo ==================== 
     # activate the venv
     workon $v
     # create the log file
@@ -132,12 +133,4 @@ else
     cat /dev/null > $logf
     update pip $logf
   done
-fi
-
-if [ $venvname ]
-then
-  workon $venvname
-elif [ $VIRTUAL_ENV ]
-then
-  deactivate
 fi
