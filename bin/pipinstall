@@ -1,8 +1,11 @@
 #!/bin/bash
-# remove the given package with pip2 and pip3 
+# install the given packages with pip2 and pip3
 
-log2=$HOME/.pip/pip2_install.log
-log3=$HOME/.pip/pip3_install.log
+pipdir=$HOME/.pip
+mkdir $pipdir 2>/dev/null
+
+log2=$pipdir/pip2_install.log
+log3=$pipdir/pip3_install.log
 
 # check if the exit code 0 or not
 # \param $1: error code
@@ -16,18 +19,29 @@ function checkexit(){
   fi
 }
 
+# do the installation
+# \param $1: pip exe
+# \param $2: logfile
+# \param $3: packages
+function pip_install(){
+  pipv=$1
+  logf=$2
+  shift
+  shift
+  echo Installing \""$@"\" with $pipv
+  for p in "$@"
+  do
+    pip2 install --user --allow-all-external $p >> $logf
+    checkexit $? $p
+  done
+}
+
 echo Clear old log files
 cat /dev/null > $log2
 cat /dev/null > $log3
 
-echo Installing $@ with pip2
-pip2 install --user --allow-all-external $@ >> $log2
-checkexit #? $@
-
-echo ==================== 
-echo Installing $@ with pip3
-
-pip3 install --user --allow-all-external $@ >> $log3
-checkexit #? $@
+pip_install pip2 $log2 "$@"
+echo ====================
+pip_install pip3 $log3 "$@"
 
 exit
