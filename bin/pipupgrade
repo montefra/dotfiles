@@ -1,14 +1,7 @@
 #!/bin/bash
-# upgrade packages installed with pip2 and pip3
+# upgrade packages in .local and in the virtualenvs installed via
+# ``virtualenvwrapper``
 
-log2=$HOME/.pip/pip2_upgrade.log
-log3=$HOME/.pip/pip3_upgrade.log
-
-locallibdir=$HOME/.local/lib
-
-echo Clear old log files
-cat /dev/null > $log2
-cat /dev/null > $log3
 
 # list the packages to update. Filters out any line starting with Some or Could
 # \param $1: name of the pip code to use
@@ -47,11 +40,11 @@ function checkexit(){
   fi
 }
 
-# upgrade the package
+# upgrade the package in .local
 # \param $1: mane of pip code to use
 # \param $2: package to update
 # \param $3: log file name
-function update(){
+function update_local(){
   is_l=`is_local $1 $2`
   if [ $is_l = true ]
   then
@@ -63,19 +56,79 @@ function update(){
   fi
 }
 
-echo Upgrading with pip2 the following packages
-to_up2=`get_toupdate pip2`
-echo $to_up2
-for tu2 in $to_up2
-do
-  update pip2 $tu2 $log2
-done
+# upgrade the package in a virtualenv
+# \param $1: mane of pip code to use
+# \param $2: package to update
+# \param $3: log file name
+function update_venv(){
+  echo $2
+  $1 install -U --allow-all-external $2 >> $3
+  checkexit $? $2
+}
 
+# upgrade all the packages
+# \param $1: mane of pip code to use
+# \param $2: logfile
+function update(){
+
+  if [ -z $VIRTUAL_ENV ]
+  then
+    echo Upgrading with $1 the following packages
+  else
+    echo Upgrading packages in venv $VIRTUAL_ENV
+  fi
+
+  to_up=`get_toupdate $1`
+  echo $to_up
+  for tu in $to_up
+  do
+    if [ -z $VIRTUAL_ENV ]
+    then
+      update_local $1 $tu $2
+    else
+      update_venv $1 $tu $2
+    fi
+  done
+}
+
+# if we are in a virtual env, save the name and deactivate
+if [ $VIRTUAL_ENV ]
+then
+  venvname=`basename $VIRTUAL_ENV`
+  deactivate
+fi
+
+# update local packages
+log2=$HOME/.pip/pip2_upgrade.log
+log3=$HOME/.pip/pip3_upgrade.log
+
+echo Clear old log files
+cat /dev/null > $log2
+cat /dev/null > $log3
+
+update pip2 $log2
 echo ==================== 
-echo Upgrading with pip3 the following packages
-to_up3=`get_toupdate pip3`
-echo $to_up3
-for tu3 in $to_up3
-do
-  update pip3 $tu3 $log3
-done
+update pip3 $log3
+
+# update the virtual environments
+venvs=`workon 2>/dev/null`
+if [ $? -lt 1 ]
+then
+  echo 'workon' not found, is wirtualenvwrapper installed
+  exit $?
+else
+  for v in $venvs
+  do
+    # activate the venv
+    workon $v
+    update pip $logf
+  done
+fi
+
+if [ $venvname ]
+then
+  workon $venvname
+elif [ $VIRTUAL_ENV ]
+then
+  deactivate
+fi
