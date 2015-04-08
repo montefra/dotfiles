@@ -31,7 +31,7 @@ function pip_remove(){
   echo removing \""$@"\" with $pipv
   for p in "$@"
   do
-    pip2 uninstall -y $p >> $logf
+    $pipv uninstall -y $p >> $logf
     checkexit $? $p
   done
 }
