@@ -98,19 +98,25 @@ then
   deactivate
 fi
 
+# log directory
+pipdir=$HOME/.pip
+mkdir $pipdir 2>/dev/null
+
 # update local packages
-log2=$HOME/.pip/pip2_upgrade.log
-log3=$HOME/.pip/pip3_upgrade.log
+log2=$pipdir/pip2_upgrade.log
+log3=$pipdir/pip3_upgrade.log
 
 echo Clear old log files
 cat /dev/null > $log2
 cat /dev/null > $log3
 
-update pip2 $log2
+# update pip2 $log2
 echo ==================== 
-update pip3 $log3
+# update pip3 $log3
 
 # update the virtual environments
+# enable workon
+source $HOME/.local/bin/virtualenvwrapper.sh
 venvs=`workon 2>/dev/null`
 if [ $? -lt 1 ]
 then
@@ -121,6 +127,9 @@ else
   do
     # activate the venv
     workon $v
+    # create the log file
+    logf=$pipdir/pip${v}_upgrade.log
+    cat /dev/null > $logf
     update pip $logf
   done
 fi
