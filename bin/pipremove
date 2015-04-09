@@ -1,8 +1,11 @@
 #!/bin/bash
 # uninstall the given packages with pip2 and pip3 
 
-log2=$HOME/.pip/pip2_uninstall.log
-log3=$HOME/.pip/pip3_uninstall.log
+pipdir=$HOME/.pip
+mkdir $pipdir 2>/dev/null
+
+log2=$pipdir/pip2_uninstall.log
+log3=$pipdir/pip3_uninstall.log
 
 # check if the exit code 0 or not
 # \param $1: error code
@@ -16,14 +19,25 @@ function checkexit(){
   fi
 }
 
-echo Uninstalling $@ with pip2
-pip2 uninstall -y $@ >> $log2
-checkexit #? $@
+# do the removal
+# \param $1: pip exe
+# \param $2: logfile
+# \param $3: packages
+function pip_remove(){
+  pipv=$1
+  logf=$2
+  shift
+  shift
+  echo removing \""$@"\" with $pipv
+  for p in "$@"
+  do
+    $pipv uninstall -y $p >> $logf
+    checkexit $? $p
+  done
+}
 
+pip_remove pip2 $log2 "$@"
 echo ==================== 
-echo Uninstalling $@ with pip3
-
-pip3 uninstall -y $@ >> $log3
-checkexit #? $@
+pip_remove pip3 $log3 "$@"
 
 exit
