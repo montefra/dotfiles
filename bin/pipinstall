@@ -29,7 +29,7 @@ function pip_install(){
   shift
   shift
   echo Installing \""$@"\" with $pipv
-  pip2 install --user --allow-all-external "$@" >> $logf
+  $pipv install --user --allow-all-external "$@" >> $logf
   checkexit $? $p
 }
 
