@@ -10,6 +10,7 @@ function get_toupdate(){
   to_up=`$1 list -l -o --allow-all-external 2>/dev/null | awk '{print $1}'`
   to_up=${to_up//Could}  # remove Could
   to_up=${to_up//Some}  # remove Some
+  to_up=${to_up//You}  # remove Some
 
   echo $to_up
 }
