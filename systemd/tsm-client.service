@@ -1,0 +1,14 @@
+[Unit]
+Description=Tivoli Storage Manager Client
+After=syslog.target network.target
+
+[Service]
+Type=forking
+Environment=DSM_LOG=/var/log
+ExecStart=/usr/bin/dsmcad
+GuessMainPID=no
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
