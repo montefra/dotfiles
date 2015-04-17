@@ -2,17 +2,25 @@
 # upgrade packages in .local and in the virtualenvs installed via
 # ``virtualenvwrapper``
 
+tmpfile=`tempfile -s pip`
 
 # list the packages to update. Filters out any line starting with Some or Could
 # \param $1: name of the pip code to use
 # \return: list of packages to be upgraded
 function get_toupdate(){
-  to_up=`$1 list -l -o --allow-all-external 2>/dev/null | awk '{print $1}'`
-  to_up=${to_up//Could}  # remove Could
-  to_up=${to_up//Some}  # remove Some
-  to_up=${to_up//You}  # remove Some
+  $1 list -l -o --allow-all-external 2>/dev/null >$tmpfile
+  if [ $? -eq 0 ]
+  then
+    to_up=`awk '{print $1}' $tmpfile`
+    to_up=${to_up//Could}  # remove Could
+    to_up=${to_up//Some}  # remove Some
+    to_up=${to_up//You}  # remove Some
 
-  echo $to_up
+    echo $to_up
+  else
+    echo -e "\e[1;31m'`which pip` -l -o --allow-all-external' failed with error $?.\e[0m" 1>&2
+    echo ""
+  fi
 }
 
 # check if the package is installed in .local/lib
@@ -22,9 +30,9 @@ function get_toupdate(){
 function is_local(){
   loc=`$1 show $2 | awk '$1~"Location:" {print $2}'`
   if [[ "$loc" = *local/lib* ]]
-  then 
+  then
     echo true
-  else 
+  else
     echo false
   fi
 }
@@ -112,7 +120,7 @@ cat /dev/null > $log2
 cat /dev/null > $log3
 
 update pip2 $log2
-echo ==================== 
+echo ====================
 update pip3 $log3
 
 # update the virtual environments
@@ -121,12 +129,12 @@ source $HOME/.local/bin/virtualenvwrapper.sh
 venvs=`workon 2>/dev/null`
 if [ $? -lt 1 ]
 then
-  echo 'workon' not found, is wirtualenvwrapper installed
+  echo 'workon' not found, is wirtualenvwrapper installed?
   exit $?
 else
   for v in $venvs
   do
-    echo ==================== 
+    echo ====================
     # activate the venv
     workon $v
     # create the log file
