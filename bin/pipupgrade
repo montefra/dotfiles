@@ -2,7 +2,7 @@
 # upgrade packages in .local and in the virtualenvs installed via
 # ``virtualenvwrapper``
 
-tmpfile=`tempfile -s pip`
+tmpfile=`mktemp --suffix .pip`
 
 # list the packages to update. Filters out any line starting with Some or Could
 # \param $1: name of the pip code to use
@@ -18,7 +18,7 @@ function get_toupdate(){
 
     echo $to_up
   else
-    echo -e "\e[1;31m'`which pip` -l -o --allow-all-external' failed with error $?.\e[0m" 1>&2
+    echo -e "\e[1;31m'`which pip` list -l -o --allow-all-external' failed with error $?.\e[0m" 1>&2
     echo ""
   fi
 }
