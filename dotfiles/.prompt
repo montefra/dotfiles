@@ -136,6 +136,11 @@ function __prompt_command() {
             if [ "$GUnt" -gt "0" ]; then
                 PS1+="${Whi}?${GUnt}"   # Untracked
             fi
+
+            local GRen="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^R")"
+            if [ "$GRen" -gt "0" ]; then
+                PS1+="${Pur}R${GRen}"   # Renamed
+            fi
             ### End Commit Status ### }}}
         fi
         ### End Git Status ### }}}
