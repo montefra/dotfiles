@@ -21,12 +21,12 @@
 # opensuse settings
 if [ -d /etc/os-release ]
 then
-  . /etc/os-release
+  osname=`awk 'BEGIN {FS="="} /^NAME/ {print($2)}' /etc/os-release`
 else
-  NAME=""
+  osname=""
 fi
 
-if [ $NAME = "openSUSE" ]
+if [ "$xNAME" = "xopenSUSE" ]
 then
   test -z "$PROFILEREAD" && . /etc/profile || true
 fi
