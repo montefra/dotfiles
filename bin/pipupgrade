@@ -18,7 +18,7 @@ function get_toupdate(){
 
     echo $to_up
   else
-    echo -e "\e[1;31m'`which pip` list -l -o --allow-all-external' failed with error $?.\e[0m" 1>&2
+    >&2 echo -e "\e[1;31m'`which pip` list -l -o --allow-all-external' failed with error $?.\e[0m"
     echo ""
   fi
 }
@@ -80,30 +80,35 @@ function update_venv(){
 # \param $2: logfile
 function update(){
 
-  if [ -z $VIRTUAL_ENV ]
+  # test if pip is in a virtualenv
+  test $WORKON_HOME && [[ ${1} =~ ${WORKON_HOME} ]]
+  isvenv=$?  # 0 means that it's a venv
+
+  if [ $isvenv -eq 0 ]
   then
-    echo Upgrading with $1 the following packages
+    venvname=`echo ${1/${WORKON_HOME}} | awk -F/ '{print $2}'`
+    echo Upgrading packages in venv $venvname
   else
-    echo Upgrading packages in venv $VIRTUAL_ENV
+    echo Upgrading local packages with $1
   fi
 
   to_up=`get_toupdate $1`
   echo $to_up
   for tu in $to_up
   do
-    if [ -z $VIRTUAL_ENV ]
+    if [ $isvenv -eq 0 ]
     then
-      update_local $1 $tu $2
-    else
       update_venv $1 $tu $2
+    else
+      update_local $1 $tu $2
     fi
   done
 }
 
-# if we are in a virtual env, save the name and deactivate
+# if we are in a virtual env, abort
 if [ $VIRTUAL_ENV ]
 then
-  echo "The script does not work properly when launched from a virtual environment"
+  >&2 echo "The script does not work properly when launched from a virtual environment"
   exit 5
 fi
 
@@ -129,17 +134,17 @@ source $HOME/.local/bin/virtualenvwrapper.sh
 venvs=`workon 2>/dev/null`
 if [ $? -lt 1 ]
 then
-  echo 'workon' not found, is wirtualenvwrapper installed?
+  >&2 echo "[ERROR] 'workon' not found, is 'wirtualenvwrapper' installed?"
   exit $?
 else
   for v in $venvs
   do
     echo ====================
-    # activate the venv
-    workon $v
     # create the log file
     logf=$pipdir/pip${v}_upgrade.log
     cat /dev/null > $logf
-    update pip $logf
+    # build the name of pip command
+    pipv=$WORKON_HOME/${v}/bin/pip
+    update $pipv $logf
   done
 fi
