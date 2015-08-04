@@ -1,5 +1,22 @@
 #!/bin/bash
-#do the update, dist-upgrade and clean in one go
+# refresh the repositories, run a dist-upgrade and clean.
+# Works on *ubuntu using ``apt-get`` and opensuse using ``zypper``
+#
+# Copyright (C) 2015 Francesco Montesano <franz.bergesund@gmail.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 exename=`command -v apt-get || command -v zypper`
 

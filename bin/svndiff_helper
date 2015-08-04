@@ -1,5 +1,26 @@
 #!/bin/bash
-# use vimdiff to see svn diffs
+# Use colordiff to see svn diffs.
+# To use it, open the file ``~/.subversion/config`` and edit the option
+# ``diff-com`` in the ``[helpers]`` section:
+#    diff-cmd = svndiff_helper
+# A version of the config file is available at
+# ``https://github.com/montefra/dotfiles/tree/master/dotfiles/.subversion``
+# 
+# Copyright (C) 2015 Francesco Montesano <franz.bergesund@gmail.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # vimdiff "$7" "$6"
 colordiff -u -L "${3}" -L "${5}" "${6}" "${7}" | less -FRSX
