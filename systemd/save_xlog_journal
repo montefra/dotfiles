@@ -1,7 +1,9 @@
 #!/bin/bash
-# Before suspension, dumps the last 3 minutes of journalctl, and the last 30
-# lines of Xorg.log and of .xsession.error and the output of xrandr into
-# ~/debug_x directory
+# Before suspension, dumps into ~/debug_x directory:
+# * the last 3 minutes of journalctl
+# * the last 30 lines of Xorg.log and of .xsession.error
+# * the output of xrandr
+# * ps -e
 
 # Get the user name. It assumes a single user
 user=`users | sed 's: :\n:g' | uniq`
@@ -17,13 +19,15 @@ fi
 case $1/$2 in
   pre/*)
     echo "saving the journal, xorg log, xsession error and xrandr output in $homedir for debugging"
-    journalctl --since "3 minutes ago" > $debug_dir/journal
+    journalctl --since "3 minutes ago" > $debug_dir/journal.out
     tail -n30 /var/log/Xorg.0.log > $debug_dir/xorg.log
-    tail -n30 $homedir/.xsession-errors > $debug_dir/xsession_error
+    tail -n30 $homedir/.xsession-errors > $debug_dir/xsession_error.log
     # set up the x stuff needed by xrandr
     export XAUTHORITY=$homedir/.Xauthority
     export DISPLAY=:0
     xrandr --verbose > $debug_dir/xrandr.out
+    # dump list of running
+    ps -ef > $debug_dir/ps_ef.out
     ;;
   post/*)
       # nothing to be done
