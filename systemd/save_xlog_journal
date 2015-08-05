@@ -20,8 +20,21 @@ case $1/$2 in
   pre/*)
     echo "saving the journal, xorg log, xsession error and xrandr output in $homedir for debugging"
     journalctl --since "3 minutes ago" > $debug_dir/journal.out
-    tail -n30 /var/log/Xorg.0.log > $debug_dir/xorg.log
-    tail -n30 $homedir/.xsession-errors > $debug_dir/xsession_error.log
+    for xlog in /var/log/Xorg.0.log*
+    do
+        if [ -s $xlog ]
+        then
+            cp -a $xlog $debug_dir
+        fi
+    done
+    for xsession in $homedir/.xsession-errors* 
+    do
+        if [ -s $xsession ]
+        then
+            fname=`basename $xsession`
+            cp -a $xsession $debug_dir/${fname/.}
+        fi
+    done
     # set up the x stuff needed by xrandr
     export XAUTHORITY=$homedir/.Xauthority
     export DISPLAY=:0
