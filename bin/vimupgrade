@@ -1,0 +1,4 @@
+#!/bin/bash
+# upgrade vim using vim-plug commands
+
+vim -c "PlugUpgrade | PlugClean | PlugInstall | PlugUpdate | qa"
