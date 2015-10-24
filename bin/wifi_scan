@@ -1,0 +1,16 @@
+#!/bin/bash
+# get the name of the wifi and scan it. This is sometimes useful when the
+# connection drops
+
+wifi_name=`sudo iwgetid | awk '{print $1}'`
+
+logs=`sudo iwlist $wifi_name scan`
+
+if [[ $? -eq 0 ]]
+then
+    echo "wifi '$wifi_name' scanned"
+else
+    echo "Something failed when scanning the interface"
+    echo $logs
+fi
+
