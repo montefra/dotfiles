@@ -99,6 +99,8 @@ diff-cmd = svndiff_helper
 ### '*' matches leading dots, e.g. '*.rej' matches '.foo.rej'.
 global-ignores = *.o *.lo *.la *.al .libs *.so *.so.[0-9]* *.a *.pyc *.pyo
    *.rej *~ #*# .#* .*.swp .swp .DS_Store .clang_complete __pycache__ .*.d
+   .cs_workspaces
+
 ### Set log-encoding to the default encoding for log messages
 # log-encoding = latin1
 ### Set use-commit-times to make checkout/update/switch/revert
