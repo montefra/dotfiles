@@ -14,6 +14,8 @@ function __prompt_command() {
     local EXIT="$?"
     PS1=""
 
+    grep=`which grep`
+
     ### Colors to Vars ### {{{
     ## Inspired by http://wiki.archlinux.org/index.php/Color_Bash_Prompt#List_of_colors_for_prompt_and_Bash
     ## Terminal Control Escape Sequences: http://www.termsys.demon.co.uk/vtansi.htm
@@ -92,7 +94,7 @@ function __prompt_command() {
 
             ### Test For Changes ### {{{
             ## Change this to test for 'ahead' or 'behind'!
-            local GChanges="$(echo ${GStat} | tr ':' '\n' | /bin/grep -v "^$" | /bin/grep -v "^\#\#" | wc -l | tr -d ' ')"
+            local GChanges="$(echo ${GStat} | tr ':' '\n' | $grep -v "^$" | $grep -v "^\#\#" | wc -l | tr -d ' ')"
             if [ "$GChanges" == "0" ]; then
                 local GitCol=$Gre
               else
@@ -101,43 +103,43 @@ function __prompt_command() {
             ### End Test Changes ### }}}
 
             ### Find Branch ### {{{
-            local GBra="$(echo ${GStat} | tr ':' '\n' | /bin/grep "^##" | cut -c4-)"
+            local GBra="$(echo ${GStat} | tr ':' '\n' | $grep "^##" | cut -c4-)"
             local GBra=${GBra/..*/}
             PS1+="${GitCol}[$GBra]${RCol}"  # Add result to prompt
             #}}}
 
             ### Find Commit Status ### {{{
-            local GAhe="$(echo ${GStat} | tr ':' '\n' | /bin/grep "^##" | /bin/grep -o "ahead [0-9]\{1,\}" | /bin/grep -o "[0-9]\{1,\}")"
+            local GAhe="$(echo ${GStat} | tr ':' '\n' | $grep "^##" | $grep -o "ahead [0-9]\{1,\}" | $grep -o "[0-9]\{1,\}")"
             if [ "$GAhe" ]; then
                 PS1+="${Gre}↑${GAhe}"   # Ahead
             fi
 
-            local GBeh="$(echo ${GStat} | tr ':' '\n' | /bin/grep "^##" | /bin/grep -o "behind [0-9]\{1,\}" | /bin/grep -o "[0-9]\{1,\}")"
+            local GBeh="$(echo ${GStat} | tr ':' '\n' | $grep "^##" | $grep -o "behind [0-9]\{1,\}" | $grep -o "[0-9]\{1,\}")"
             if [ "$GBeh" ]; then
                 PS1+="${Red}↓${GBeh}"   # Behind
             fi
 
-            local GMod="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^[ MARC]M")"
+            local GMod="$(echo ${GStat} | tr ':' '\n' | $grep -c "^[ MARC]M")"
             if [ "$GMod" -gt "0" ]; then
                 PS1+="${Pur}≠${GMod}"   # Modified
             fi
 
-            local GNew="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^A")"
+            local GNew="$(echo ${GStat} | tr ':' '\n' | $grep -c "^A")"
             if [ "$GNew" -gt "0" ]; then
                 PS1+="${Cya}N${GNew}"   # Added
             fi
 
-            local GDel="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^ D")"
+            local GDel="$(echo ${GStat} | tr ':' '\n' | $grep -c "^ D")"
             if [ "$GDel" -gt "0" ]; then
                 PS1+="${Yel}X${GDel}"   # Deleted
             fi
 
-            local GUnt="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^\?")"
+            local GUnt="$(echo ${GStat} | tr ':' '\n' | $grep -c "^\?")"
             if [ "$GUnt" -gt "0" ]; then
                 PS1+="${Whi}?${GUnt}"   # Untracked
             fi
 
-            local GRen="$(echo ${GStat} | tr ':' '\n' | /bin/grep -c "^R")"
+            local GRen="$(echo ${GStat} | tr ':' '\n' | $grep -c "^R")"
             if [ "$GRen" -gt "0" ]; then
                 PS1+="${Pur}R${GRen}"   # Renamed
             fi
@@ -146,37 +148,40 @@ function __prompt_command() {
         ### End Git Status ### }}}
 
         ### add SVN status ### {{{
-        revision=`svn info 2>/dev/null | awk '$1~"Revision" {print $2}'`
+        svn_info=`svn info 2>/dev/null`
+        revision=`echo "$svn_info" | awk '$1~"Revision" {print $2}'`
         if [ -n "$revision" ]
         then
+            rel_url=`echo "$svn_info" | awk '$1~"Relative" {print $3}'`
+            rel_url=${rel_url/^\/}
             PS1+=' +svn'
             # get the status
             SStat=`svn status | awk '{print $1}'`
             # if the status is empty write the revision in green, otherwise red {{{
             if [ -n "$SStat" ]
             then
-                PS1+="${Red}[$revision]${RCol}"  # Add result to prompt
+                PS1+="${Red}[$rel_url@$revision]${RCol}"  # Add result to prompt
             else
-                PS1+="${Gre}[$revision]${RCol}"  # Add result to prompt
+                PS1+="${Gre}[$rel_url@$revision]${RCol}"  # Add result to prompt
             fi
             # }}}
             # Check for modified, new, untracked and removed files {{{
-            local SMod="$(echo "${SStat}" | /bin/grep -c "M")"
+            local SMod="$(echo "${SStat}" | $grep -c "M")"
             if [ "$SMod" -gt "0" ]; then
                 PS1+="${Pur}≠${SMod}"   # Modified
             fi
 
-            local SNew="$(echo "${SStat}" | /bin/grep -c "A")"
+            local SNew="$(echo "${SStat}" | $grep -c "A")"
             if [ "$SNew" -gt "0" ]; then
                 PS1+="${Cya}N${SNew}"   # Added
             fi
 
-            local SDel="$(echo "${SStat}" | /bin/grep -c "D")"
+            local SDel="$(echo "${SStat}" | $grep -c "D")"
             if [ "$SDel" -gt "0" ]; then
                 PS1+="${Yel}X${SDel}"   # Deleted
             fi
 
-            local SUnt="$(echo "${SStat}" | /bin/grep -c "?")"
+            local SUnt="$(echo "${SStat}" | $grep -c "?")"
             if [ "$SUnt" -gt "0" ]; then
                 PS1+="${Whi}?${SUnt}"   # Untracked
             fi

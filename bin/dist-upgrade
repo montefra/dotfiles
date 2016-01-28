@@ -18,10 +18,21 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-exename=`command -v apt-get || command -v zypper`
+# guess the os name
+if grep -q opensuse /etc/os-release
+then
+    exename=`command -v zypper`
+else
+    exename=`command -v apt-get`
+fi
 
 # update/refresh the repositories
-sudo $exename refresh || sudo $exename update
+if [[ $exename = *"zypper"* ]]
+then
+    sudo $exename refresh
+else
+    sudo $exename update
+fi
 
 # distribution upgrade
 sudo $exename dist-upgrade
