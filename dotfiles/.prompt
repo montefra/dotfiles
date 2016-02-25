@@ -148,18 +148,21 @@ function __prompt_command() {
         ### End Git Status ### }}}
 
         ### add SVN status ### {{{
-        revision=`svn info 2>/dev/null | awk '$1~"Revision" {print $2}'`
+        svn_info=`svn info 2>/dev/null`
+        revision=`echo "$svn_info" | awk '$1~"Revision" {print $2}'`
         if [ -n "$revision" ]
         then
+            rel_url=`echo "$svn_info" | awk '$1~"Relative" {print $3}'`
+            rel_url=${rel_url/^\/}
             PS1+=' +svn'
             # get the status
             SStat=`svn status | awk '{print $1}'`
             # if the status is empty write the revision in green, otherwise red {{{
             if [ -n "$SStat" ]
             then
-                PS1+="${Red}[$revision]${RCol}"  # Add result to prompt
+                PS1+="${Red}[$rel_url@$revision]${RCol}"  # Add result to prompt
             else
-                PS1+="${Gre}[$revision]${RCol}"  # Add result to prompt
+                PS1+="${Gre}[$rel_url@$revision]${RCol}"  # Add result to prompt
             fi
             # }}}
             # Check for modified, new, untracked and removed files {{{
