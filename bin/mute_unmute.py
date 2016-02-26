@@ -145,7 +145,7 @@ def main(argv=None):
     """Run the code"""
     args = parser(argv=argv)
 
-    if not args.name or not args.seconds:
+    if not args.name and args.seconds <= 0:
         print("Please provides at least the name or the seconds")
         sys.exit(1)
 
