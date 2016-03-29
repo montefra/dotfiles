@@ -6,6 +6,8 @@
 	editor = vim
 [diff]
 	tool = vimdiff
+[diff "odf"]
+      textconv = odt2txt
 [difftool]
 	prompt = false
 [alias]
