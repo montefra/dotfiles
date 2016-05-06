@@ -31,7 +31,7 @@ svn () {
     #colorize the diff
     #remove stupid ^M dos line endings
     #page it if there's more one screen
-    command svn diff "$@" | colordiff | sed -e 's/\r//g' | less -RF
+    command svn diff "$@" | colordiff | sed -e 's/\r//g' | less -R
 
   #add some color to svn status output and page if needed:
   #M = blue
@@ -44,7 +44,7 @@ svn () {
     command svn status "$@" | sed -e 's/^\(\([A-Z]\s\+\(+\s\+\)\?\)\?C .*\)$/\o33\[1;35m\1\o33[0m/' \
                                   -e 's/^\(\s*M.*\)$/\o33\[1;34m\1\o33[0m/' \
                                   -e 's/^\(A.*\)$/\o33\[1;32m\1\o33[0m/' \
-                                  -e 's/^\(\(D\|!\|~\).*\)$/\o33\[1;31m\1\o33[0m/' | less -RF
+                                  -e 's/^\(\(D\|!\|~\).*\)$/\o33\[1;31m\1\o33[0m/'
 
   #page some stuff I often end up paging manually
   elif [[ $sub_cmd =~ ^(blame|help|h|cat)$ ]]; then
@@ -56,7 +56,7 @@ svn () {
   #to:
   #  2010-10-08 21:19 (Fri, +1300)
   elif [[ $sub_cmd == log ]]; then
-    command svn log "$@" | sed -e 's/^\(.*\)|\(.*\)| \(.*\) \(.*\):[0-9]\{2\} \(.*\) (\(...\).*) |\(.*\)$/\o33\[1;32m\1\o33[0m|\o33\[1;34m\2\o33[0m| \o33\[1;35m\3 \4 (\6, \5)\o33[0m |\7/' | less -RF
+    command svn log "$@" | sed -e 's/^\(.*\)|\(.*\)| \(.*\) \(.*\):[0-9]\{2\} \(.*\) (\(...\).*) |\(.*\)$/\o33\[1;32m\1\o33[0m|\o33\[1;34m\2\o33[0m| \o33\[1;35m\3 \4 (\6, \5)\o33[0m |\7/' | less -R
 
   #let svn handle it as normal
   else
@@ -64,4 +64,4 @@ svn () {
   fi
 }
 
-# vi:sw=2:et:sts=2
+# vi:sw=3:et:sts=4
