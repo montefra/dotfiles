@@ -100,6 +100,9 @@ if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
 
+# if ~/.subversion/svnhacks.sh exists, source it
+[ -f ~/.subversion/svnhacks.sh ] && . ~/.subversion/svnhacks.sh
+
 ulimit -c unlimited
 
 stty stop undef # to unmap ctrl-s
