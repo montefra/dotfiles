@@ -1,6 +1,7 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
+# add .bashrc_p for extra customisation not added to the repo
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
@@ -116,3 +117,6 @@ export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 source $HOME/.local/bin/virtualenvwrapper.sh
+
+# extra non committed custom bashrc stuff
+[ -f ~/.bashrc_p ] && . ~/.bashrc_p
