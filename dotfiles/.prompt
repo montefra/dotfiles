@@ -44,6 +44,10 @@ function __prompt_command() {
         then
             PS1+="${BIWhi}(`basename ${VIRTUAL_ENV}`)${RCol}"
         fi #}}}
+        if [ -n "$CONDA_DEFAULT_ENV" ]
+        then
+            PS1+="${BIWhi}(conda: ${CONDA_DEFAULT_ENV})${RCol}"
+        fi #}}}
 
         local PSCol=""                      # Declare so null var fine
 
