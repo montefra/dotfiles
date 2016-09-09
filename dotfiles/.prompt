@@ -160,7 +160,7 @@ function __prompt_command() {
             rel_url=${rel_url/^\/}
             PS1+=' +svn'
             # get the status
-            SStat=`svn status | awk '{print $1}'`
+            SStat=`svn status | awk 'BEGIN{FS="   *"}{print $1}'`
             # if the status is empty write the revision in green, otherwise red {{{
             if [ -n "$SStat" ]
             then
@@ -183,6 +183,10 @@ function __prompt_command() {
             local SDel="$(echo "${SStat}" | $grep -c "D")"
             if [ "$SDel" -gt "0" ]; then
                 PS1+="${Yel}X${SDel}"   # Deleted
+            fi
+            local Del="$(echo "${SStat}" | $grep -c "!")"
+            if [ "$Del" -gt "0" ]; then
+                PS1+="${Yel}x${Del}"   # Deleted but not in svn
             fi
 
             local SUnt="$(echo "${SStat}" | $grep -c "?")"
