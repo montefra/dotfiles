@@ -1,0 +1,37 @@
+#!/bin/bash
+
+function help {
+  echo "  Loop through the branches and for each one print the svn merge infos"
+  echo "  and which commits are still to be merged."
+  echo "  If no branch name to search is provided, '^/branches' is used."
+  echo "  Usage"
+  echo "    `basename $1` [branches_name]"
+  exit
+}
+
+if [ "$1" == '-h' -o "$1" == '--help' ]
+then
+    help $0
+fi
+
+if [ $# -ge 1 ]
+then
+    branches="$1"
+else
+    branches="^/branches"
+fi
+
+for b in `svn ls $branches`
+do
+    branch="$branches/$b"
+    echo "===== START: $branch ====="
+    svn mergeinfo $branch
+    commits=`svn mergeinfo --show-revs eligible $branch`
+    if [ x"$commits" = x ]
+    then
+        echo "No commits to merge"
+    else
+        echo Commits to merge: $commits
+    fi
+    echo "===== FINISH: $branch ====="
+done
