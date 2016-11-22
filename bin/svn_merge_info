@@ -1,4 +1,7 @@
 #!/bin/bash
+# loop through all the branches and runs
+# svn mergeinfo $branch
+# svn mergeinfo --show-revs eligible $branch
 
 function help {
   echo "  Loop through the branches and for each one print the svn merge infos"
