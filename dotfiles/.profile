@@ -41,7 +41,7 @@ fi
 
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
+    export PATH="$HOME/bin:$PATH"
 fi
 if [ -d $HOME/.local/bin ]
 then
@@ -57,3 +57,7 @@ fi
 if [ -d $HOME/.cabal/bin ] ; then
     PATH=$HOME/.cabal/bin:"${PATH}"
 fi
+
+# use kwallet for git also
+
+export SSH_ASKPASS=/usr/bin/ksshaskpass
