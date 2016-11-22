@@ -13,7 +13,7 @@
 ###   kwallet              (Unix-like systems)
 ###   keychain             (Mac OS X)
 ###   windows-cryptoapi    (Windows)
-password-stores = kwallet
+# password-stores = kwallet
 ###
 ### Set KWallet wallet used by Subversion. If empty or unset,
 ### then the default network wallet will be used.
@@ -48,7 +48,7 @@ password-stores = kwallet
 ### Set diff-cmd to the absolute path of your 'diff' program.
 ###   This will override the compile-time default, which is to use
 ###   Subversion's internal diff implementation.
-diff-cmd = svndiff_helper
+# diff-cmd = svndiff_helper
 ### Diff-extensions are arguments passed to an external diff
 ### program or to Subversion's internal diff implementation.
 ### Set diff-extensions to override the default arguments ('-u').
@@ -98,7 +98,7 @@ diff-cmd = svndiff_helper
 ### while importing or adding files and directories.
 ### '*' matches leading dots, e.g. '*.rej' matches '.foo.rej'.
 global-ignores = *.o *.lo *.la *.al .libs *.so *.so.[0-9]* *.a *.pyc *.pyo
-   *.rej *~ #*# .#* .*.swp .swp .DS_Store .clang_complete __pycache__ .*.d
+   *.rej *~ .*.swp .*.swo .DS_Store .clang_complete __pycache__ .*.d #*# .#*
    .cs_workspaces
 
 ### Set log-encoding to the default encoding for log messages
