@@ -46,7 +46,7 @@ fi
 for b in `svn ls $branches`
 do
     branch="$branches/$b"
-    echo "===== START: $branch ====="
+    echo -e "\e[96m===== START: $branch =====\e[0m"
     if [ "$long_merge" == "true" ]
     then
         svn mergeinfo $branch
@@ -54,9 +54,9 @@ do
     commits=`svn mergeinfo --show-revs eligible $branch`
     if [ x"$commits" = x ]
     then
-        echo "No commits to merge"
+        echo -e "\e[32mNo commits to merge\e[0m"
     else
-        echo Commits to merge: $commits
+        echo -e "\e[91mCommits to merge: \e[1m${commits//$'\n'/ }\e[0m"
     fi
-    echo "===== FINISH: $branch ====="
+    echo -e "\e[36m===== FINISH: $branch =====\e[0m"
 done
