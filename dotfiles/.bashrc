@@ -130,7 +130,7 @@ then
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
-    pyenv virtualenvwrapper
+    which virtualenvwrapper.sh > /dev/null && pyenv virtualenvwrapper
 fi
 
 # extra non committed custom bashrc stuff
