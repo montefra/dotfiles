@@ -26,7 +26,7 @@ else
   osname=""
 fi
 
-if [ "$xNAME" = "xopenSUSE" ]
+if [ "x$NAME" = "xopenSUSE" ]
 then
   test -z "$PROFILEREAD" && . /etc/profile || true
 fi
@@ -43,33 +43,24 @@ fi
 if [ -d "$HOME/bin" ] ; then
     export PATH="$HOME/bin:$PATH"
 fi
-if [ -d $HOME/.local/bin ]
+if [ -d "$HOME/.local/bin" ]
 then
-  export PATH=$HOME/.local/bin:"${PATH}"
+  export PATH="$HOME/.local/bin:${PATH}"
 fi
-if [ -d $HOME/.gem/ruby/2.1.0/bin ]
+if [ -d "$HOME/.gem/ruby/2.1.0/bin" ]
 then
-  export PATH=$HOME/.gem/ruby/2.1.0/bin:"${PATH}"
+  export PATH="$HOME/.gem/ruby/2.1.0/bin:${PATH}"
 fi
-if [ -d $HOME/.gem/ruby/2.0.0/bin ] ; then
-    PATH=$HOME/.gem/ruby/2.0.0/bin:"${PATH}" 
+if [ -d "$HOME/.gem/ruby/2.0.0/bin" ] ; then
+    PATH="$HOME/.gem/ruby/2.0.0/bin:${PATH}" 
 fi
-if [ -d $HOME/.cabal/bin ] ; then
-    PATH=$HOME/.cabal/bin:"${PATH}"
+if [ -d "$HOME/.cabal/bin" ] ; then
+    PATH="$HOME/.cabal/bin:${PATH}"
 fi
-
-# Load pyenv automatically by adding
-# the following to ~/.profile:
-PYENV_ROOT=$HOME/.pyenv
-if [ -d $PYENV_ROOT ]
+if [ -d "$PYENV_ROOT" ]
 then
-    export PYENV_ROOT
     export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
-    eval "$(pyenv virtualenv-init -)"
-    which virtualenvwrapper.sh > /dev/null && pyenv virtualenvwrapper
 fi
 
 # use kwallet for git also
-
 export SSH_ASKPASS=/usr/bin/ksshaskpass
