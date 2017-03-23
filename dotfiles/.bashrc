@@ -115,6 +115,9 @@ export FCEDIT=vim
 #default editor used in svn when committing
 export SVN_EDITOR=vim
 
+# use kwallet for git also
+export SSH_ASKPASS=/usr/bin/ksshaskpass
+
 # virtualenvwrapper
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
