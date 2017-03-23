@@ -127,14 +127,15 @@ source $HOME/.local/bin/virtualenvwrapper.sh
 # Load pyenv automatically by adding
 # the following to ~/.bash_profile:
 PYENV_ROOT=$HOME/.pyenv
-if [ -d $PYENV_ROOT ]
+if [ -z "$PYENV_INITIALIZED" -a -d "$PYENV_ROOT" ]
 then
     export PYENV_ROOT
-    # export PATH="$PYENV_ROOT/bin:$PATH"
+    export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
     which virtualenvwrapper.sh > /dev/null && pyenv virtualenvwrapper
 fi
+export PYENV_INITIALIZED=true
 
 # extra non committed custom bashrc stuff
 [ -f ~/.bashrc_p ] && . ~/.bashrc_p
