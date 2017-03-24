@@ -62,12 +62,3 @@ if [ -n "$BASH_VERSION" ]; then
 	. "$HOME/.bashrc"
     fi
 fi
-
-# use kwallet for git also
-if [ -d /usr/bin/ksshaskpass ]
-then
-    export SSH_ASKPASS=/usr/bin/ksshaskpass
-elif [ -d /usr/bin/ssh/ksshaskpass ]
-then
-    export SSH_ASKPASS=/usr/bin/ssh/ksshaskpass
-fi
