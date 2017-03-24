@@ -59,5 +59,10 @@ if [ -d $HOME/.cabal/bin ] ; then
 fi
 
 # use kwallet for git also
-
-export SSH_ASKPASS=/usr/bin/ksshaskpass
+if [ -d /usr/bin/ksshaskpass ]
+then
+    export SSH_ASKPASS=/usr/bin/ksshaskpass
+elif [ -d /usr/bin/ssh/ksshaskpass ]
+then
+    export SSH_ASKPASS=/usr/bin/ssh/ksshaskpass
+fi
