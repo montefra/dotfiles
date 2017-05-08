@@ -34,6 +34,8 @@ function get_toupdate(){
     to_up=${to_up//Could}  # remove Could
     to_up=${to_up//Some}  # remove Some
     to_up=${to_up//You}  # remove Some
+    to_up=${to_up//Package}  # remove Package
+    to_up=${to_up//-}  # remove -----
 
     echo $to_up
   else
