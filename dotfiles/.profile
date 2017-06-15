@@ -42,13 +42,12 @@ then
     then
     export PATH="$HOME/.local/bin:${PATH}"
     fi
-    if [ -d "$HOME/.gem/ruby/2.1.0/bin" ]
-    then
-    export PATH="$HOME/.gem/ruby/2.1.0/bin:${PATH}"
-    fi
-    if [ -d "$HOME/.gem/ruby/2.0.0/bin" ] ; then
-        PATH="$HOME/.gem/ruby/2.0.0/bin:${PATH}" 
-    fi
+
+    for i in `ls -d $HOME/.gem/ruby/*/bin`
+    do
+        PATH="$i:${PATH}" 
+    done
+
     if [ -d "$HOME/.cabal/bin" ] ; then
         PATH="$HOME/.cabal/bin:${PATH}"
     fi
