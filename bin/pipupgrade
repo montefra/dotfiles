@@ -149,23 +149,28 @@ update pip3 $log3
 
 # update the virtual environments managed with virtualenvwrapper
 # enable workon
-source $HOME/.local/bin/virtualenvwrapper.sh
-venvs=`workon 2>/dev/null`
-if [ $? -lt 1 ]
+virtualenvwrapper_sh=$HOME/.local/bin/virtualenvwrapper.sh
+if [ -e $virtualenvwrapper_sh ]
 then
-  >&2 echo "[ERROR] 'workon' not found, is 'wirtualenvwrapper' installed?"
-  exit $?
+    source $virtualenvwrapper_sh
+    venvs=`workon 2>/dev/null`
+    if [ $? -lt 1 ]
+    then
+        >&2 echo "[ERROR] 'workon' not found, is 'wirtualenvwrapper' installed?"
+    else
+    for v in $venvs
+    do
+        echo ====================
+        # create the log file
+        logf=$pipdir/pip${v}_upgrade.log
+        cat /dev/null > $logf
+        # build the name of pip command
+        pipv=$WORKON_HOME/${v}/bin/pip
+        update $pipv $logf $v
+    done
+    fi
 else
-  for v in $venvs
-  do
-    echo ====================
-    # create the log file
-    logf=$pipdir/pip${v}_upgrade.log
-    cat /dev/null > $logf
-    # build the name of pip command
-    pipv=$WORKON_HOME/${v}/bin/pip
-    update $pipv $logf $v
-  done
+    echo "virtualenvwrapper not installed, nothing to do"
 fi
 
 # update the pyenvs
@@ -173,7 +178,11 @@ if [ -n "$PYENV_ROOT" -a -d "$PYENV_ROOT" ]
 then
     for v in `pyenv versions --skip-aliases --bare`
     do
+        echo ====================
+        # create the log file
         logf=$pipdir/pip_${v}_upgrade.log
+        cat /dev/null > $logf
+        # build the name of pip command
         pipv=$PYENV_ROOT/versions/$v/bin/pip
         update $pipv $logf $v
     done
