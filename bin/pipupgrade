@@ -167,3 +167,16 @@ else
     update $pipv $logf $v
   done
 fi
+
+# update the pyenvs
+if [ -n "$PYENV_ROOT" -a -d "$PYENV_ROOT" ]
+then
+    for v in `pyenv versions --skip-aliases --bare`
+    do
+        logf=$pipdir/pip_${v}_upgrade.log
+        pipv=$PYENV_ROOT/versions/$v/bin/pip
+        update $pipv $logf $v
+    done
+else
+    echo "Pyenv not installed, nothing to do"
+fi
