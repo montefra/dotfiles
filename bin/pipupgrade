@@ -162,7 +162,7 @@ then
     do
         echo ====================
         # create the log file
-        logf=$pipdir/pip${v}_upgrade.log
+        logf=$pipdir/pip_${v}_upgrade.log
         cat /dev/null > $logf
         # build the name of pip command
         pipv=$WORKON_HOME/${v}/bin/pip
@@ -180,7 +180,7 @@ then
     do
         echo ====================
         # create the log file
-        logf=$pipdir/pip_${v}_upgrade.log
+        logf=$pipdir/pip_${v//\//_}_upgrade.log
         cat /dev/null > $logf
         # build the name of pip command
         pipv=$PYENV_ROOT/versions/$v/bin/pip
