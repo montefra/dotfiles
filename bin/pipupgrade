@@ -27,7 +27,7 @@ tmpfile=`mktemp --suffix .pip`
 # \param $1: name of the pip code to use
 # \return: list of packages to be upgraded
 function get_toupdate(){
-  $1 list -l -o 2>/dev/null >$tmpfile
+  $1 list -l -o --format legacy 2>/dev/null >$tmpfile
   if [ $? -eq 0 ]
   then
     to_up=`awk '{print $1}' $tmpfile`
@@ -35,7 +35,6 @@ function get_toupdate(){
     to_up=${to_up//Some}  # remove Some
     to_up=${to_up//You}  # remove Some
     to_up=${to_up//Package}  # remove Package
-    to_up=${to_up//-}  # remove -----
 
     echo $to_up
   else
