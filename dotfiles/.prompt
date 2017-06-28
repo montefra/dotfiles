@@ -38,9 +38,18 @@ function __prompt_command() {
         PS1+="${Red} \u@\h \w ->${RCol} "   #}}}
     else    # set prompt for anyone else {{{
         # if inside a pyenv
-        if [ -n "$PYENV_VERSION" ] 
+        command -v pyenv >/dev/null 2>&1
+        has_pyenv=$?
+        if [ $has_pyenv -eq 0 ] 
         then
-            PS1+="${BIWhi}(pyenv: ${PYENV_VERSION})${RCol}"
+            version=`pyenv version-name`
+            if [ "$version" != "system" ]
+            then
+                PS1+="${BIWhi}(pyenv: ${version})${RCol}"
+            elif [ -n "$PYENV_VERSION" ]
+            then
+                PS1+="${BIWhi}(pyenv: ${version})${RCol}"
+            fi
         # if inside a python virtual environment {{{
         # Normally this happen by default, but this customisation make things a
         # bit more complicated
