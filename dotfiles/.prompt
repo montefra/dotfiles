@@ -37,14 +37,18 @@ function __prompt_command() {
     if [ $UID -eq "0" ];then   #{{{ Set prompt for root
         PS1+="${Red} \u@\h \w ->${RCol} "   #}}}
     else    # set prompt for anyone else {{{
+        # if inside a pyenv
+        if [ -n "$PYENV_VERSION" ] 
+        then
+            PS1+="${BIWhi}(pyenv: ${PYENV_VERSION})${RCol}"
         # if inside a python virtual environment {{{
         # Normally this happen by default, but this customisation make things a
         # bit more complicated
-        if [ -n "$VIRTUAL_ENV" ]
+        elif [ -n "$VIRTUAL_ENV" ]
         then
-            PS1+="${BIWhi}(`basename ${VIRTUAL_ENV}`)${RCol}"
-        fi #}}}
-        if [ -n "$CONDA_DEFAULT_ENV" ]
+            venv_name=`basename ${VIRTUAL_ENV}`
+            PS1+="${BIWhi}(${venv_name})${RCol}"
+        elif [ -n "$CONDA_DEFAULT_ENV" ]
         then
             PS1+="${BIWhi}(conda: ${CONDA_DEFAULT_ENV})${RCol}"
         fi #}}}
