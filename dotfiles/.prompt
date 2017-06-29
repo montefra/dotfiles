@@ -37,30 +37,33 @@ function __prompt_command() {
     if [ $UID -eq "0" ];then   #{{{ Set prompt for root
         PS1+="${Red} \u@\h \w ->${RCol} "   #}}}
     else    # set prompt for anyone else {{{
-        # if inside a pyenv
-        command -v pyenv >/dev/null 2>&1
-        has_pyenv=$?
-        if [ $has_pyenv -eq 0 ] 
-        then
-            version=`pyenv version-name`
-            if [ "$version" != "system" ]
-            then
-                PS1+="${BIWhi}(pyenv: ${version})${RCol}"
-            elif [ -n "$PYENV_VERSION" ]
-            then
-                PS1+="${BIWhi}(pyenv: ${version})${RCol}"
-            fi
-        # if inside a python virtual environment {{{
-        # Normally this happen by default, but this customisation make things a
-        # bit more complicated
-        elif [ -n "$VIRTUAL_ENV" ]
-        then
-            venv_name=`basename ${VIRTUAL_ENV}`
-            PS1+="${BIWhi}(${venv_name})${RCol}"
-        elif [ -n "$CONDA_DEFAULT_ENV" ]
-        then
-            PS1+="${BIWhi}(conda: ${CONDA_DEFAULT_ENV})${RCol}"
-        fi #}}}
+        # get all the versions
+        pyenv_version=`pyenv version 2>/dev/null`
+        venv_version=`basename "$VIRTUAL_ENV"`
+        conda_version=$CONDA_DEFAULT_ENV
+        # combine them for casing
+        combined=$pyenv_version++$venv_version++$conda_version
+
+        case $combined in
+            system*/version\)++++)
+                ;;
+            ?*++++)
+                PS1+="${Whi}(pyenv: `pyenv version-name`)${RCol}"
+                ;;
+            ?*++?*++)
+                if [ ${venv_version} = `pyenv version-name` ] 
+                then
+                    PS1+="${BIWhi}(pyenv: ${venv_version})${RCol}"
+                else
+                    PS1+="${BIWhi}(${venv_version})${RCol}"
+                fi
+                ;;
+            ?*++++?*)
+                PS1+="${BIWhi}(conda: ${conda_version})${RCol}"
+                ;;
+            *)
+                echo ""
+        esac
 
         local PSCol=""                      # Declare so null var fine
 
