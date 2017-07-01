@@ -26,10 +26,33 @@ else
   osname=""
 fi
 
-if [ "$xNAME" = "xopenSUSE" ]
+if [ "x$NAME" = "xopenSUSE" ]
 then
   test -z "$PROFILEREAD" && . /etc/profile || true
 fi
+
+if [ -z "$PATHS_EXPORTED" ]
+then
+
+    # set PATH so it includes user's private bin if it exists
+    if [ -d "$HOME/bin" ] ; then
+        export PATH="$HOME/bin:$PATH"
+    fi
+    if [ -d "$HOME/.local/bin" ]
+    then
+    export PATH="$HOME/.local/bin:${PATH}"
+    fi
+
+    for i in `ls -d $HOME/.gem/ruby/*/bin`
+    do
+        PATH="$i:${PATH}" 
+    done
+
+    if [ -d "$HOME/.cabal/bin" ] ; then
+        PATH="$HOME/.cabal/bin:${PATH}"
+    fi
+fi
+export PATHS_EXPORTED=true
 
 # if running bash, from kubuntu, use it also in opensuse
 if [ -n "$BASH_VERSION" ]; then
@@ -38,26 +61,3 @@ if [ -n "$BASH_VERSION" ]; then
 	. "$HOME/.bashrc"
     fi
 fi
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    export PATH="$HOME/bin:$PATH"
-fi
-if [ -d $HOME/.local/bin ]
-then
-  export PATH=$HOME/.local/bin:"${PATH}"
-fi
-if [ -d $HOME/.gem/ruby/2.1.0/bin ]
-then
-  export PATH=$HOME/.gem/ruby/2.1.0/bin:"${PATH}"
-fi
-if [ -d $HOME/.gem/ruby/2.0.0/bin ] ; then
-    PATH=$HOME/.gem/ruby/2.0.0/bin:"${PATH}" 
-fi
-if [ -d $HOME/.cabal/bin ] ; then
-    PATH=$HOME/.cabal/bin:"${PATH}"
-fi
-
-# use kwallet for git also
-
-export SSH_ASKPASS=/usr/bin/ksshaskpass

@@ -115,11 +115,47 @@ export FCEDIT=vim
 #default editor used in svn when committing
 export SVN_EDITOR=vim
 
+# use kwallet for git also
+if [ -d /usr/bin/ksshaskpass ]
+then
+    export SSH_ASKPASS=/usr/bin/ksshaskpass
+elif [ -d /usr/bin/ssh/ksshaskpass ]
+then
+    export SSH_ASKPASS=/usr/bin/ssh/ksshaskpass
+fi
+
 # virtualenvwrapper
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 [ -f $HOME/.local/bin/virtualenvwrapper.sh ] && source $HOME/.local/bin/virtualenvwrapper.sh
+
+# Load pyenv automatically by adding
+# the following to ~/.bash_profile:
+PYENV_ROOT=$HOME/.pyenv
+if [ -d "$PYENV_ROOT" ]
+then
+    export PYENV_ROOT
+    if [ -z "$PYENV_INITIALIZED" ]
+    then
+        export PATH="$PYENV_ROOT/bin:$PATH"
+    else
+        # if pyenv is already initialized, save the old path before
+        # initializing pyenv and pyenv virtualenv
+        OLD_PATH=$PATH
+    fi
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+    if [ -z "$PYENV_INITIALIZED" ]
+    then  # do this only once as it add a lot of paths
+        which virtualenvwrapper.sh > /dev/null && pyenv virtualenvwrapper
+    else
+        # if pyenv is already initialized, save the old path, to avoid the
+        # initialisations to add extra paths
+        export PATH=$OLD_PATH
+    fi
+    export PYENV_INITIALIZED=true
+fi
 
 # extra non committed custom bashrc stuff
 [ -f ~/.bashrc_p ] && . ~/.bashrc_p

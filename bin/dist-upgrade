@@ -35,7 +35,12 @@ else
 fi
 
 # distribution upgrade
-sudo $exename dist-upgrade
+if [[ $exename = *"zypper"* ]]
+then
+    sudo $exename dist-upgrade --no-allow-vendor-change
+else
+    sudo $exename dist-upgrade
+fi
 
 hasfinished=$?   #get the exit from status dist-upgrade
 if [ $hasfinished -eq 0 ]

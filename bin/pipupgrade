@@ -27,13 +27,14 @@ tmpfile=`mktemp --suffix .pip`
 # \param $1: name of the pip code to use
 # \return: list of packages to be upgraded
 function get_toupdate(){
-  $1 list -l -o 2>/dev/null >$tmpfile
+  $1 list -l -o --format legacy 2>/dev/null >$tmpfile
   if [ $? -eq 0 ]
   then
     to_up=`awk '{print $1}' $tmpfile`
     to_up=${to_up//Could}  # remove Could
     to_up=${to_up//Some}  # remove Some
     to_up=${to_up//You}  # remove Some
+    to_up=${to_up//Package}  # remove Package
 
     echo $to_up
   else
@@ -95,27 +96,25 @@ function update_venv(){
 }
 
 # upgrade all the packages
-# \param $1: mane of pip code to use
+# \param $1: name of pip code to use
 # \param $2: logfile
+# \param $3: env_name name of the environment, optional
 function update(){
 
-  # test if pip is in a virtualenv
-  test $WORKON_HOME && [[ ${1} =~ ${WORKON_HOME} ]]
-  isvenv=$?  # 0 means that it's a venv
-
-  if [ $isvenv -eq 0 ]
+  if [ $# -eq 2 ]
   then
-    venvname=`echo ${1/${WORKON_HOME}} | awk -F/ '{print $2}'`
-    echo Upgrading packages in venv $venvname
-  else
     echo Upgrading local packages with $1
+    isenv=false
+  else
+    echo Upgrading packages in environment $3
+    isenv=true
   fi
 
   to_up=`get_toupdate $1`
   echo $to_up
   for tu in $to_up
   do
-    if [ $isvenv -eq 0 ]
+    if [ $isenv = true ]
     then
       update_venv $1 $tu $2
     else
@@ -147,23 +146,45 @@ update pip2 $log2
 echo ====================
 update pip3 $log3
 
-# update the virtual environments
+# update the virtual environments managed with virtualenvwrapper
 # enable workon
-source $HOME/.local/bin/virtualenvwrapper.sh
-venvs=`workon 2>/dev/null`
-if [ $? -lt 1 ]
+virtualenvwrapper_sh=$HOME/.local/bin/virtualenvwrapper.sh
+if [ -e $virtualenvwrapper_sh ]
 then
-  >&2 echo "[ERROR] 'workon' not found, is 'wirtualenvwrapper' installed?"
-  exit $?
+    source $virtualenvwrapper_sh
+    venvs=`workon 2>/dev/null`
+    if [ $? -lt 1 ]
+    then
+        >&2 echo "[ERROR] 'workon' not found, is 'wirtualenvwrapper' installed?"
+    else
+    for v in $venvs
+    do
+        echo ====================
+        # create the log file
+        logf=$pipdir/pip_${v}_upgrade.log
+        cat /dev/null > $logf
+        # build the name of pip command
+        pipv=$WORKON_HOME/${v}/bin/pip
+        update $pipv $logf $v
+    done
+    fi
 else
-  for v in $venvs
-  do
-    echo ====================
-    # create the log file
-    logf=$pipdir/pip${v}_upgrade.log
-    cat /dev/null > $logf
-    # build the name of pip command
-    pipv=$WORKON_HOME/${v}/bin/pip
-    update $pipv $logf
-  done
+    echo "virtualenvwrapper not installed, nothing to do"
+fi
+
+# update the pyenvs
+if [ -n "$PYENV_ROOT" -a -d "$PYENV_ROOT" ]
+then
+    for v in `pyenv versions --skip-aliases --bare`
+    do
+        echo ====================
+        # create the log file
+        logf=$pipdir/pip_${v//\//_}_upgrade.log
+        cat /dev/null > $logf
+        # build the name of pip command
+        pipv=$PYENV_ROOT/versions/$v/bin/pip
+        update $pipv $logf $v
+    done
+else
+    echo "Pyenv not installed, nothing to do"
 fi

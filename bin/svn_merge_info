@@ -3,19 +3,38 @@
 # svn mergeinfo $branch
 # svn mergeinfo --show-revs eligible $branch
 
-function help {
-  echo "  Loop through the branches and for each one print the svn merge infos"
-  echo "  and which commits are still to be merged."
-  echo "  If no branch name to search is provided, '^/branches' is used."
-  echo "  Usage"
-  echo "    `basename $1` [branches_name]"
-  exit
+function show_help {
+cat << EOF
+Usage:
+    ${0##*/} [-hl]
+
+Loop through the branches and for each one print the svn merge infos
+and which commits are still to be merged.
+If no branch name to search is provided, '^/branches' is used.
+
+    -h
+        print this help
+    -l
+        show also the merge tree
+EOF
 }
 
-if [ "$1" == '-h' -o "$1" == '--help' ]
-then
-    help $0
-fi
+# show the svn merge tree
+long_merge=false
+
+while getopts "hl" opt
+do
+  case "$opt" in
+    h) show_help
+       exit 0 ;;
+    l) long_merge=true ;;
+    '?') show_help
+         exit 1 ;;
+  esac
+done
+
+# get rid of the optional arguments
+shift $((OPTIND-1))
 
 if [ $# -ge 1 ]
 then
@@ -28,7 +47,10 @@ for b in `svn ls $branches`
 do
     branch="$branches/$b"
     echo -e "\e[96m===== START: $branch =====\e[0m"
-    svn mergeinfo $branch
+    if [ "$long_merge" == "true" ]
+    then
+        svn mergeinfo $branch
+    fi
     commits=`svn mergeinfo --show-revs eligible $branch`
     if [ x"$commits" = x ]
     then
