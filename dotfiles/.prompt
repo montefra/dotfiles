@@ -62,7 +62,7 @@ function __prompt_command() {
                 PS1+="${BIWhi}(conda: ${conda_version})${RCol}"
                 ;;
             *)
-                echo ""
+                ;;
         esac
 
         local PSCol=""                      # Declare so null var fine
