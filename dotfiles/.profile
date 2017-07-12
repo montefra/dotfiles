@@ -43,7 +43,7 @@ then
     export PATH="$HOME/.local/bin:${PATH}"
     fi
 
-    for i in `ls -d $HOME/.gem/ruby/*/bin`
+    for i in `ls -d $HOME/.gem/ruby/*/bin 2>/dev/null`
     do
         PATH="$i:${PATH}" 
     done
