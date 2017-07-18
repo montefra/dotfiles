@@ -14,7 +14,7 @@ function __prompt_command() {
     local EXIT="$?"
     PS1=""
 
-    grep=`which grep`
+    grep=`which --skip-alias grep`
 
     ### Colors to Vars ### {{{
     ## Inspired by http://wiki.archlinux.org/index.php/Color_Bash_Prompt#List_of_colors_for_prompt_and_Bash
