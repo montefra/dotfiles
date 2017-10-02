@@ -40,16 +40,16 @@ then
     fi
     if [ -d "$HOME/.local/bin" ]
     then
-    export PATH="$HOME/.local/bin:${PATH}"
+        export PATH="$HOME/.local/bin:${PATH}"
     fi
 
     for i in `ls -d $HOME/.gem/ruby/*/bin 2>/dev/null`
     do
-        PATH="$i:${PATH}" 
+        export PATH="$i:${PATH}" 
     done
 
     if [ -d "$HOME/.cabal/bin" ] ; then
-        PATH="$HOME/.cabal/bin:${PATH}"
+        export PATH="$HOME/.cabal/bin:${PATH}"
     fi
 fi
 export PATHS_EXPORTED=true
