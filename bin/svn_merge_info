@@ -54,9 +54,17 @@ do
     commits=`svn mergeinfo --show-revs eligible $branch`
     if [ x"$commits" = x ]
     then
-        echo -e "\e[32mNo commits to merge\e[0m"
+        echo -e "\e[32mThe branch is fully merged\e[0m"
     else
-        echo -e "\e[91mCommits to merge: \e[1m${commits//$'\n'/ }\e[0m"
+        echo -e "\e[91mThe following commits in the branch are not yet merged: \e[1m${commits//$'\n'/ }\e[0m"
+        pending_commits=`svn mergeinfo --show-revs eligible ^/trunk $branch`
+        if [ x"$pending_commits" = x ]
+        then
+            echo -e "\e[32mAll commits from the ^/trunk are present in the branch"
+        else
+            echo -e "\e[91mThe ^/trunk is ahead of the branch: \e[1m${commits//$'\n'/ }\e[0m"
+            echo -e "\e[91mSwitch to the branch and merge the trunk commits before merging the branch back into the trunk\e[0m"
+        fi
     fi
     echo -e "\e[36m===== FINISH: $branch =====\e[0m"
 done
