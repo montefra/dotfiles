@@ -37,7 +37,7 @@ fi
 # distribution upgrade
 if [[ $exename = *"zypper"* ]]
 then
-    sudo $exename dist-upgrade --no-allow-vendor-change
+    sudo $exename dist-upgrade
 else
     sudo $exename dist-upgrade
 fi
