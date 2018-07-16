@@ -18,19 +18,6 @@
 #export LANG=fr_FR.UTF-8	# uncomment this line for French output
 #export LANG=es_ES.UTF-8	# uncomment this line for Spanish output
 
-# opensuse settings
-if [ -d /etc/os-release ]
-then
-  osname=`awk 'BEGIN {FS="="} /^NAME/ {print($2)}' /etc/os-release`
-else
-  osname=""
-fi
-
-if [ "x$NAME" = "xopenSUSE" ]
-then
-  test -z "$PROFILEREAD" && . /etc/profile || true
-fi
-
 if [ -z "$PATHS_EXPORTED" ]
 then
 
@@ -38,6 +25,7 @@ then
     if [ -d "$HOME/bin" ] ; then
         export PATH="$HOME/bin:$PATH"
     fi
+
     if [ -d "$HOME/.local/bin" ]
     then
         export PATH="$HOME/.local/bin:${PATH}"
