@@ -8,3 +8,11 @@ __pycache__
 *.pyc
 .cache
 .python-version
+*.code-workspace
+.vscode
+*.idea
+protoc
+.mvn/extensions.xml
+.mvn/settings.xml
+.mvn/maven.config
+.java-version
