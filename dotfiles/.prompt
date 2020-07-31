@@ -7,8 +7,6 @@
 # Modified by Francesco Montesano (https://github.com/montefra/dotfiles)
 
 ### This Changes The PS1 ### {{{
-export PROMPT_COMMAND=__prompt_command  # Func to gen PS1 after CMDs
-
 function __prompt_command() {
     # This needs to be first
     local EXIT="$?"
@@ -68,7 +66,7 @@ function __prompt_command() {
         local PSCol=""                      # Declare so null var fine
 
         ### error code {{{
-        if [ $EXIT != 0 ]; then
+        if [ $EXIT -ne 0 ]; then
             ## can add `kill -l $?` to test to filter backgrounded
             PS1+="${IRed}(${EXIT})${RCol} "     # Add exit code, if non 0
         fi   #}}}
@@ -217,3 +215,6 @@ function __prompt_command() {
     fi  # }}}
 }
 ### End PS1 ### }}}
+#
+# Func to gen PS1 after CMDs
+PROMPT_COMMAND="__prompt_command;$PROMPT_COMMAND";
