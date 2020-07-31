@@ -18,31 +18,6 @@
 #export LANG=fr_FR.UTF-8	# uncomment this line for French output
 #export LANG=es_ES.UTF-8	# uncomment this line for Spanish output
 
-if [ -z "$PATHS_EXPORTED" ]
-then
-
-    # set PATH so it includes user's private bin if it exists
-    if [ -d "$HOME/bin" ] ; then
-        export PATH="$HOME/bin:$PATH"
-    fi
-
-    if [ -d "$HOME/.local/bin" ]
-    then
-        export PATH="$HOME/.local/bin:${PATH}"
-    fi
-
-    for i in `ls -d $HOME/.gem/ruby/*/bin 2>/dev/null`
-    do
-        export PATH="$i:${PATH}" 
-    done
-
-    if [ -d "$HOME/.cabal/bin" ] ; then
-        export PATH="$HOME/.cabal/bin:${PATH}"
-    fi
-fi
-export PATHS_EXPORTED=true
-
-# if running bash, from kubuntu, use it also in opensuse
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
     if [ -f "$HOME/.bashrc" ]; then

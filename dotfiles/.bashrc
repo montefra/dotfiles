@@ -64,18 +64,6 @@ else
 fi
 unset color_prompt force_color_prompt
 
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
-    ;;
-*)
-    ;;
-esac
-
-# custom prompt
-[ -f ~/.prompt ] && . ~/.prompt
-
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -132,6 +120,36 @@ then
     export SSH_ASKPASS=/usr/bin/ssh/ksshaskpass
 fi
 
+# setup PATH
+if [ -z "$PATHS_EXPORTED" ]
+then
+
+    # set PATH so it includes user's private bin if it exists
+    if [ -d "$HOME/bin" ] ; then
+        export PATH="$HOME/bin:$PATH"
+    fi
+
+    if [ -d "$HOME/.local/bin" ]
+    then
+        export PATH="$HOME/.local/bin:${PATH}"
+    fi
+
+    for i in `ls -d $HOME/.gem/ruby/*/bin 2>/dev/null`
+    do
+        export PATH="$i:${PATH}" 
+    done
+
+    if [ -d "$HOME/.cabal/bin" ] ; then
+        export PATH="$HOME/.cabal/bin:${PATH}"
+    fi
+
+    export PATH="$HOME/.cargo/bin:$PATH"
+
+    # Use newer mvn
+    export PATH="$HOME/software/apache-maven-3.6.3/bin:$PATH"
+fi
+export PATHS_EXPORTED=true
+
 # virtualenvwrapper
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
@@ -165,5 +183,18 @@ then
     export PYENV_INITIALIZED=true
 fi
 
+# Load jenv
+export PATH="$HOME/.jenv/bin:$PATH"
+eval "$(jenv init -)"
+eval "$(jenv enable-plugin export)"
+
+# custom prompt
+[ -f ~/.prompt ] && . ~/.prompt
+
 # extra non committed custom bashrc stuff
 [ -f ~/.bashrc_p ] && . ~/.bashrc_p
+
+# extra commands completion
+if [ -f ~/.config/exercism/exercism_completion.bash ]; then
+  source ~/.config/exercism/exercism_completion.bash
+fi
