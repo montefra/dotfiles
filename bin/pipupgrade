@@ -27,14 +27,15 @@ tmpfile=`mktemp --suffix .pip`
 # \param $1: name of the pip code to use
 # \return: list of packages to be upgraded
 function get_toupdate(){
-  $1 list -l -o --format legacy 2>/dev/null >$tmpfile
+  $1 list -l -o --format freeze 2>/dev/null >$tmpfile
   if [ $? -eq 0 ]
   then
-    to_up=`awk '{print $1}' $tmpfile`
+    to_up=`awk -F "==" '{print $1}' $tmpfile`
     to_up=${to_up//Could}  # remove Could
     to_up=${to_up//Some}  # remove Some
-    to_up=${to_up//You}  # remove Some
+    to_up=${to_up//You}  # remove You
     to_up=${to_up//Package}  # remove Package
+    to_up=${to_up//^-?}  # remove Package
 
     echo $to_up
   else
@@ -142,8 +143,6 @@ echo Clear old log files
 cat /dev/null > $log2
 cat /dev/null > $log3
 
-update pip2 $log2
-echo ====================
 update pip3 $log3
 
 # update the virtual environments managed with virtualenvwrapper
