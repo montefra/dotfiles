@@ -4,7 +4,7 @@
 #
 # usage: pipupgrade
 #
-# Copyright (C) 2015 Francesco Montesano <franz.bergesund@gmail.com>
+# Copyright (C) 2020 Francesco Montesano <franz.bergesund@gmail.com>
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -136,11 +136,9 @@ pipdir=$HOME/.pip
 mkdir $pipdir 2>/dev/null
 
 # update local packages
-log2=$pipdir/pip2_upgrade.log
 log3=$pipdir/pip3_upgrade.log
 
 echo Clear old log files
-cat /dev/null > $log2
 cat /dev/null > $log3
 
 update pip3 $log3
