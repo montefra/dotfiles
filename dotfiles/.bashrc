@@ -188,6 +188,9 @@ export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
 eval "$(jenv enable-plugin export)"
 
+# Latex path
+export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
+
 # custom prompt
 [ -f ~/.prompt ] && . ~/.prompt
 
