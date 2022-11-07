@@ -1,11 +1,10 @@
-#!/usr/bin/env pthon3
+#!/usr/bin/env python3
 """
- upgrade packages in .local and in the virtualenvs installed via
- ``virtualenvwrapper``
+ upgrade packages in .local and in the pyenv installed
 
  usage: pipupgrade
 
- Copyright (C) 2020 Francesco Montesano <franz.bergesund@gmail.com>
+ Copyright (C) 2022 Francesco Montesano <franz.bergesund@gmail.com>
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -43,39 +42,40 @@ def get_subprocess_stdout(cmd: List[str]) -> str:
     return p.stdout
 
 
-def get_packages_to_update(pip: Path) -> Iterable[str]:
+def get_packages_to_update(python: Path) -> Iterable[str]:
     logger.info("Search for packages to update")
-    options = "list -l -o --format freeze"
+    options = "-m pip list -l -o --format freeze --disable-pip-version-check"
 
-    stdout = get_subprocess_stdout([pip, ] + options.split())
+    stdout = get_subprocess_stdout([python, ] + options.split())
 
     for line in stdout.splitlines():
         package_name = line.split("==")[0]
         yield package_name
 
 
-def update_local(pip: Path):
-    packages = list(filter(functools.partial(is_package_local, pip),
-                           get_packages_to_update(pip)))
+def update_local(python: Path):
+    packages = list(filter(functools.partial(is_package_local, python),
+                           get_packages_to_update(python)))
 
     if packages:
-        logger.info("%s: updating packages %s", pip.name, ", ".join(packages))
-        options = "install --use-feature=2020-resolver -U --user"
-        stdout = get_subprocess_stdout([pip, ] + options.split() + packages)
+        logger.info("%s: updating packages %s", python.name,
+                    ", ".join(packages))
+        options = "-m pip install -U --user"
+        stdout = get_subprocess_stdout([python, ] + options.split() + packages)
 
         logger.info("Packages updated")
         logger.debug(stdout)
     else:
-        logger.warning("no packages to update with %s", pip.name)
+        logger.warning("no packages to update with %s", python.name)
 
 
-def update_venv(pip: Path, env_name: str):
-    packages = list(get_packages_to_update(pip))
+def update_venv(python: Path, env_name: str):
+    packages = list(get_packages_to_update(python))
 
     if packages:
         logger.info("%s: updating packages %s", env_name, ", ".join(packages))
-        options = "install --use-feature=2020-resolver -U"
-        stdout = get_subprocess_stdout([pip, ] + options.split() + packages)
+        options = "-m pip install -U"
+        stdout = get_subprocess_stdout([python, ] + options.split() + packages)
 
         logger.info("Packages updated")
         logger.debug(stdout)
@@ -83,9 +83,11 @@ def update_venv(pip: Path, env_name: str):
         logger.warning("no packages to update in %s", env_name)
 
 
-def is_package_local(pip: Path, package: str) -> bool:
+def is_package_local(python: Path, package: str) -> bool:
     pattern = r"\nLocation: .*?local/lib.*?\n"
-    match = re.search(pattern, get_subprocess_stdout([pip, "show", package]))
+    package_path = get_subprocess_stdout([python, "-m", "pip",
+                                          "show", package])
+    match = re.search(pattern, package_path)
 
     if match is None:
         logger.warning("To upgrade %s first re-install it using --user",
@@ -122,8 +124,8 @@ def update_pyenv_environments():
         for version in versions.splitlines():
             logger.info("====================")
 
-            pip = pyenv_root / "versions" / version / "bin" / "pip"
-            update_venv(pip, version)
+            python = pyenv_root / "versions" / version / "bin" / "python"
+            update_venv(python, version)
     else:
         logger.info("Pyenv not installed, nothing to do")
 
@@ -137,8 +139,7 @@ def main():
         logger.error(msg)
         raise EnvironmentError(msg)
 
-    pip3 = Path(shutil.which("pip3"))
-    update_local(pip3)
+    update_local(Path("/usr/bin/python3"))
 
     update_pyenv_environments()
 
