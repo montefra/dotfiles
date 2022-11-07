@@ -23,7 +23,7 @@ if grep -q opensuse /etc/os-release
 then
     exename=`command -v zypper`
 else
-    exename=`command -v apt-get`
+    exename=`command -v apt`
 fi
 
 # update/refresh the repositories
@@ -32,6 +32,7 @@ then
     sudo $exename refresh
 else
     sudo $exename update
+    sudo $exename list --upgradable
 fi
 
 # distribution upgrade
@@ -39,7 +40,7 @@ if [[ $exename = *"zypper"* ]]
 then
     sudo $exename dist-upgrade
 else
-    sudo $exename dist-upgrade
+    sudo $exename full-upgrade
 fi
 
 hasfinished=$?   #get the exit from status dist-upgrade
