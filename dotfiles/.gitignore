@@ -15,4 +15,6 @@ protoc
 .mvn/extensions.xml
 .mvn/settings.xml
 .mvn/maven.config
+.mvn
 .java-version
+.ipynb_checkpoints
