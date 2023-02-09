@@ -21,6 +21,7 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
 import functools
+import json
 import logging
 import os
 from pathlib import Path
@@ -44,12 +45,12 @@ def get_subprocess_stdout(cmd: List[str]) -> str:
 
 def get_packages_to_update(python: Path) -> Iterable[str]:
     logger.info("Search for packages to update")
-    options = "-m pip list -l -o --format freeze --disable-pip-version-check"
+    options = "-m pip list -l -o --format json --disable-pip-version-check"
 
     stdout = get_subprocess_stdout([python, ] + options.split())
 
-    for line in stdout.splitlines():
-        package_name = line.split("==")[0]
+    for line in json.loads(stdout):
+        package_name = line["name"]
         yield package_name
 
 
@@ -160,7 +161,11 @@ def subprocess_run_mock(monkeypatch):
 
 
 def test_get_packages_to_upgrade(subprocess_run_mock):
-    mock_packages = "package1==1.2.3\npackage2==1.3.4\npackage3==1.2.4"
+    mock_packages = ('[{"name": "package1", "version": "65.5.0",'
+        '"latest_version": "65.6.3", "latest_filetype": "wheel"},'
+        '{"name": "package2", "version": "65.5.0", "latest_version": "65.6.3",'
+        '"latest_filetype": "wheel"},{"name": "package3", "version": "65.5.0",'
+        '"latest_version": "65.6.3", "latest_filetype": "wheel"}]')
     subprocess_run_mock(mock_packages)
 
     pip = Path("pip")
